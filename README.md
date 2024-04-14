@@ -21,6 +21,12 @@ TODO: which components you wrote tests for (frontend and backend)
 
 ### Backend
 - Go
+## Recommended Development Prerequisites
+- Golang programming language
+- Docker Desktop or WSL or standard Docker if you are on macos or linux
+- Jetbrains Goland (Is included in the student license, would recommend for beginners) or VSCode
+- ...
+
 
 ## License
 This is a project developed in an HdM course
