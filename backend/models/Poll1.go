@@ -8,5 +8,5 @@ type Poll1 struct {
 	UserID      uint
 	Title       string
 	Description string
-	text1       string
+	Text        string
 }

@@ -8,5 +8,5 @@ type Poll3 struct {
 	UserID      uint
 	Title       string
 	Description string
-	text3       string
+	Text        string
 }
