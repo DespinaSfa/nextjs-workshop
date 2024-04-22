@@ -2,6 +2,7 @@ package db
 
 import (
 	"backend/config"
+	"backend/models"
 	"fmt"
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
@@ -36,4 +37,15 @@ func SetupDatabase(config *config.Config) (*gorm.DB, error) {
 	fmt.Printf("Connected to database %s running on %s:%s\n", config.DBName, config.DBHost, config.DBPort)
 
 	return db, nil
+}
+
+// Call only when Database is empty
+func PopulateDatabase(db *gorm.DB) {
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Poll1{})
+	db.AutoMigrate(&models.Poll2{})
+	db.AutoMigrate(&models.Poll3{})
+
+	user := models.User{Username: "Tom", Password: "12345", Token: "4321"}
+	db.Create(&user)
 }
