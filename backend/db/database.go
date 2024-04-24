@@ -36,7 +36,7 @@ func SetupDatabase(config *config.Config) (*gorm.DB, error) {
 
 	//Populate Database
 	//TODO: Call only if database is empty
-	populateDatabase(db)
+	//populateDatabase(db)
 
 	fmt.Printf("Connected to database %s running on %s:%s\n", config.DBName, config.DBHost, config.DBPort)
 
