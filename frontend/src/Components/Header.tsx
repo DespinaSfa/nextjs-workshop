@@ -1,12 +1,22 @@
 import React from 'react';
-import './Header.css';
+import c from './Header.module.scss';
+import Button from '@mui/material/Button';
+import { Link } from "react-router-dom";
 
 class Header extends React.Component {
     render() {
       return (
         <>
-            <h1 className='icon'>Party Poll</h1>
-            <hr />
+          <div className={c.header}>
+            <h1 className={c.icon}>Party Poll</h1>
+            {
+            //TODO: if logged in display instead of Login button the profil menu -> change when authentication is implemented
+            }
+            <Button className={c.button} component={Link} to="/login">
+              Login
+            </Button>
+          </div>
+          <hr/>
         </>
       );
     }

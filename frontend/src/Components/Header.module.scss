@@ -1,0 +1,34 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: 50px;
+}
+.icon {
+    font-family: "Gochi Hand";
+}
+
+.button {
+    background-color: #DBF881;
+    color: #000000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.6rem 1rem;
+    border-radius: 0rem;
+    border: none;
+    cursor: pointer;
+    // transition: background-color 0.3s ease-in-out; 
+    
+    &:hover {
+        background-color: #887EF1;
+        color: #ffffff;
+    }
+
+}
+
+hr {
+    color: #887EF1;
+}
