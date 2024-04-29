@@ -1,20 +1,12 @@
 package models
 
-import "gorm.io/gorm"
-
-type Poll struct {
-	gorm.Model
-	User        User
-	UserID      uint
+type PollResponse struct {
 	Title       string
 	Description string
 	PollType    string
 }
 
-type PollParty struct {
-	gorm.Model
-	Poll                  Poll
-	PollID                uint
+type PollPartyResponse struct {
 	SongToBePlayed        string
 	CurrentAlcoholLevel   int
 	PreferredAlcoholLevel int
@@ -22,10 +14,7 @@ type PollParty struct {
 	WishSnack             string
 }
 
-type PollWedding struct {
-	gorm.Model
-	Poll                Poll
-	PollID              uint
+type PollWeddingResponse struct {
 	WeddingInvite       string
 	KnowCoupleSince     int
 	KnowCoupleFromWhere string
