@@ -20,8 +20,21 @@ func CreateResult(poll *models.Poll, addPollResult *models.PollParty) error {
 }
 
 func ReadUserPolls(userID int) ([]*models.PollResponse, error) {
-	// return all polls without results for overview
-	return nil, nil
+	var user *models.User
+	// Check if the user exists
+	result := db.First(&user, userID)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find user: %w", result.Error)
+	}
+
+	var pollResponse []*models.PollResponse
+	// Select only the "title" and "description" columns from the database
+	result = db.Model(&models.Poll{}).Select("title, description, poll_type").Where("user_id = ?", userID).Scan(&pollResponse)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to get user's polls: %w", result.Error)
+	}
+
+	return pollResponse, nil
 }
 
 func ReadPollByID(pollID int) error {
