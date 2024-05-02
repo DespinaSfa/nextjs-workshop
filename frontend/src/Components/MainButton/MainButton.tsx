@@ -1,17 +1,18 @@
 import React from 'react';
 import Button from '@mui/material/Button';
 import c from './MainButton.module.scss';
+import { Link } from "react-router-dom";
 
 interface MainButtonProps {
-  label: string;
-  onClick: () => void;
+  text: string;
+  link: string;
 }
 
-const MainButton: React.FC<MainButtonProps> = ({ label, onClick }) => {
+const MainButton: React.FC<MainButtonProps> = ({ text, link }) => {
   return (
-    <div className={c.btn}>
-      <Button variant="contained" onClick={onClick}>
-        {label}
+    <div>
+      <Button className={c.btn} component={Link} to={link} variant="contained">
+        {text}
       </Button>
     </div>
   );
