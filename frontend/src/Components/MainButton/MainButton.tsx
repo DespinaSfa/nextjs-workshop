@@ -11,7 +11,7 @@ interface MainButtonProps {
 const MainButton: React.FC<MainButtonProps> = ({ text, link }) => {
   return (
     <div>
-      <Button className={c.btn} component={Link} to={link} variant="contained">
+      <Button className={c.Button} component={Link} to={link} variant="contained">
         {text}
       </Button>
     </div>
