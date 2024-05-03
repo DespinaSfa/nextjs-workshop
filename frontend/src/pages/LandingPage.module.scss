@@ -1,0 +1,22 @@
+.content {
+    margin: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.text {
+    width: 900px;
+    font-family: "Raleway";
+    font-size: 42px;
+}
+
+.icon {
+    font-family: "Gochi Hand";
+    font-size: 82px;
+}
+
+.button {
+    align-self: center;
+    padding-top: 80px;
+}

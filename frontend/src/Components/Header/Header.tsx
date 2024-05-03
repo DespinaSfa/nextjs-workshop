@@ -1,7 +1,6 @@
 import React from 'react';
 import c from './Header.module.scss';
-import Button from '@mui/material/Button';
-import { Link } from "react-router-dom";
+import MainButton from '../MainButton/MainButton';
 
 class Header extends React.Component {
     render() {
@@ -12,9 +11,7 @@ class Header extends React.Component {
             {
             //TODO: if logged in display instead of Login button the profil menu -> change when authentication is implemented
             }
-            <Button className={c.button} component={Link} to="/login">
-              Login
-            </Button>
+            <MainButton text='Login' link='/login'/>
           </div>
           <hr/>
         </>

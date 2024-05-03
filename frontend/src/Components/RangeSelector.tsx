@@ -5,11 +5,18 @@ interface SliderProps {
   min: number;
   max: number;
   step: number;
+  onChange: (value: number) => void;
 }
 
-const SliderComponent: React.FC<SliderProps> = ({ min, max, step }) => {
-  const defaultValue = (max - min) / 2 + min; // Set default value to the midpoint
-  
+const SliderComponent: React.FC<SliderProps> = ({ min, max, step, onChange }) => {
+  const defaultValue = (max - min) / 2 + min; 
+
+  const handleSliderChange = (event: Event, value: number | number[]) => {
+    if (!Array.isArray(value)) {
+      onChange(value);
+    }
+  };
+
   return (
     <Slider
       defaultValue={defaultValue}
@@ -23,6 +30,7 @@ const SliderComponent: React.FC<SliderProps> = ({ min, max, step }) => {
         width: 1000,
         color: '#DBF881'
       }}
+      onChange={handleSliderChange} 
     />
   );
 };
