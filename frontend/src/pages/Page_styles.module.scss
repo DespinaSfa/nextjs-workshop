@@ -1,0 +1,90 @@
+.landingPage {
+    margin: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.backButton {
+    color: #fff;
+}
+
+.heading {
+    width: auto;
+    font-family: "Raleway";
+    font-size: 24px;
+    align-self: center;
+    margin-left: 40px;
+}
+
+.text {
+    width: 900px;
+    font-family: "Raleway";
+    font-size: 42px;
+}
+
+.icon {
+    font-family: "Gochi Hand";
+    font-size: 82px;
+}
+
+.button {
+    align-self: center;
+    padding-top: 80px;
+}
+
+.selectContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.selectButton {
+    width: 439px; 
+    height: 720px; 
+    padding: 0;
+    color: transparent; 
+  
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  
+    background-size: cover;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.party {
+    background-image: url('../images/PartyBackground.png');
+}
+.room {
+    background-image: url('../images/RoomBackground.png');
+}
+.wedding {
+    background-image: url('../images/WeddingBackground.png');
+}
+.buttonText {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000 !important;
+    color: #fff;
+    font-family: "Raleway";
+    font-size: 24px;
+    width: 160px;
+    height: 60px;
+}
