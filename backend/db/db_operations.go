@@ -2,6 +2,7 @@ package db
 
 import (
 	"backend/models"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
@@ -15,24 +16,70 @@ func CreatePoll(db *gorm.DB, addPoll *models.Poll) error {
 	return nil
 }
 
-func CreateResult(db *gorm.DB, poll *models.Poll, addPollResult *models.PollParty) error {
-	// Validate that the poll exists
-	if err := db.First(&models.Poll{}, poll.ID).Error; err != nil {
-		return fmt.Errorf("poll not found: %w", err)
+func AddPollResponse(db *gorm.DB, jsonResponse []byte) error {
+
+	//example usage:
+	//partyJson := `{
+	//    "poll_id": 1,
+	//    "poll_type": "party",
+	//    "data": {
+	//        "songToBePlayed": "Dancing Queen",
+	//        "currentAlcoholLevel": 5,
+	//        "preferredAlcoholLevel": 7,
+	//        "favoriteActivity": "Karaoke",
+	//        "wishSnack": "Chips"
+	//    }
+	//}`
+	//if err := db.AddPollResponse(dataBase, []byte(partyJson)); err != nil {
+	//	fmt.Println("Error adding party poll response:", err)
+	//} else {
+	//	fmt.Println("Party poll response added successfully")
+	//}
+
+	var response models.GenericPollResponse
+	if err := json.Unmarshal(jsonResponse, &response); err != nil {
+		return err
 	}
 
-	// Set the PollID of the PollParty to the given poll's ID
-	addPollResult.PollID = poll.ID
+	switch response.PollType {
+	case "party":
+		var partyResponse models.PollPartyResponse
+		if err := json.Unmarshal(response.Data, &partyResponse); err != nil {
+			return err
+		}
+		// Convert PollPartyResponse to PollParty (your DB model)
+		dbModel := models.PollParty{
+			PollID:                response.PollID,
+			SongToBePlayed:        partyResponse.SongToBePlayed,
+			CurrentAlcoholLevel:   partyResponse.CurrentAlcoholLevel,
+			PreferredAlcoholLevel: partyResponse.PreferredAlcoholLevel,
+			FavoriteActivity:      partyResponse.FavoriteActivity,
+			WishSnack:             partyResponse.WishSnack,
+		}
+		return db.Create(&dbModel).Error
 
-	// Insert the new PollParty result
-	if err := db.Create(addPollResult).Error; err != nil {
-		return fmt.Errorf("failed to create poll result: %w", err)
+	case "wedding":
+		var weddingResponse models.PollWeddingResponse
+		if err := json.Unmarshal(response.Data, &weddingResponse); err != nil {
+			return err
+		}
+		// Convert PollWeddingResponse to PollWedding (your DB model)
+		dbModel := models.PollWedding{
+			PollID:              response.PollID,
+			WeddingInvite:       weddingResponse.WeddingInvite,
+			KnowCoupleSince:     weddingResponse.KnowCoupleSince,
+			KnowCoupleFromWhere: weddingResponse.KnowCoupleFromWhere,
+			WeddingHighlight:    weddingResponse.WeddingHighlight,
+			CoupleWish:          weddingResponse.CoupleWish,
+		}
+		return db.Create(&dbModel).Error
+
+	default:
+		return errors.New("unknown poll type")
 	}
-
-	return nil
 }
 
-func ReadUserPolls(userID int) ([]*models.PollInfoResponse, error) {
+func ReadUserPolls(userID int) ([]*models.PollInfo, error) {
 	var user *models.User
 	// Check if the user exists
 	result := db.First(&user, userID)
@@ -40,7 +87,7 @@ func ReadUserPolls(userID int) ([]*models.PollInfoResponse, error) {
 		return nil, fmt.Errorf("failed to find user: %w", result.Error)
 	}
 
-	var pollResponse []*models.PollInfoResponse
+	var pollResponse []*models.PollInfo
 	// Select only the "title" and "description" columns from the database
 	result = db.Model(&models.Poll{}).Select("title, description, poll_type").Where("user_id = ?", userID).Scan(&pollResponse)
 	if result.Error != nil {

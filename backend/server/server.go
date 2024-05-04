@@ -15,6 +15,7 @@ func InitServer() {
 	if err != nil {
 		panic("error setting up database: " + err.Error())
 	}
+
 	r := chi.NewRouter()
 
 	setupMiddleware(r)
