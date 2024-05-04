@@ -1,6 +1,6 @@
 package models
 
-type PollResponse struct {
+type PollInfoResponse struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	PollType    string `json:"pollType"`

@@ -32,7 +32,7 @@ func CreateResult(db *gorm.DB, poll *models.Poll, addPollResult *models.PollPart
 	return nil
 }
 
-func ReadUserPolls(userID int) ([]*models.PollResponse, error) {
+func ReadUserPolls(userID int) ([]*models.PollInfoResponse, error) {
 	var user *models.User
 	// Check if the user exists
 	result := db.First(&user, userID)
@@ -40,7 +40,7 @@ func ReadUserPolls(userID int) ([]*models.PollResponse, error) {
 		return nil, fmt.Errorf("failed to find user: %w", result.Error)
 	}
 
-	var pollResponse []*models.PollResponse
+	var pollResponse []*models.PollInfoResponse
 	// Select only the "title" and "description" columns from the database
 	result = db.Model(&models.Poll{}).Select("title, description, poll_type").Where("user_id = ?", userID).Scan(&pollResponse)
 	if result.Error != nil {
@@ -108,10 +108,8 @@ func populateDatabase(db *gorm.DB) {
 
 	// Create polls
 	polls := []models.Poll{
-		{UserID: users[0].ID, Title: "The Ultimate Cat Quiz", Description: "Decide which cat is the best: Garfield, Tom, or Sylvester?", PollType: "fun"},
-		{UserID: users[1].ID, Title: "Elvis Song Poll", Description: "Which song rocks your blue suede shoes?", PollType: "music"},
-		{UserID: users[2].ID, Title: "Wizardry Wonders", Description: "Which spell would you cast in a duel?", PollType: "fantasy"},
-	}
+		{UserID: users[1].ID, Title: "Unsere Hochzeit", Description: "Hallo. Wir hoffen euch gefällt unsere Hochzeit. Für ein Spiel später füllt bitte diese kleine Umfrage aus. Vielen Dank! Euer Simon und eure Anna", PollType: "wedding"}, {UserID: users[1].ID, Title: "Elvis Song Poll", Description: "Which song rocks your blue suede shoes?", PollType: "music"},
+		{UserID: users[2].ID, Title: "Freds Fette Fete", Description: "Moin, moin! Diese Umfrage habe ich erstellt, damit ihr meine Party bewerten könnt. Die nächste wird dadurch noch geiler, versprochen!", PollType: "party"}}
 	for i := range polls {
 		if err := db.Create(&polls[i]).Error; err != nil {
 			fmt.Printf("Failed to create poll %s: %v\n", polls[i].Title, err)
@@ -121,8 +119,8 @@ func populateDatabase(db *gorm.DB) {
 
 	// Create related party and wedding details
 	partyDetails := []models.PollParty{
-		{PollID: polls[0].ID, SongToBePlayed: "Meow Mix Theme", CurrentAlcoholLevel: 0, PreferredAlcoholLevel: 0, FavoriteActivity: "Cat Napping", WishSnack: "Tuna"},
-		{PollID: polls[1].ID, SongToBePlayed: "Hound Dog", CurrentAlcoholLevel: 5, PreferredAlcoholLevel: 10, FavoriteActivity: "Dancing", WishSnack: "Peanut Butter Banana Sandwich"},
+		{PollID: polls[0].ID, SongToBePlayed: "tempo - cro", CurrentAlcoholLevel: 1, PreferredAlcoholLevel: 3, FavoriteActivity: "dance", WishSnack: "Pizza"},
+		{PollID: polls[1].ID, SongToBePlayed: "Friesenjung - Ski Aggu", CurrentAlcoholLevel: 5, PreferredAlcoholLevel: 1, FavoriteActivity: "karaoke", WishSnack: "Brownies"},
 	}
 	for _, detail := range partyDetails {
 		if err := db.Create(&detail).Error; err != nil {
@@ -132,7 +130,8 @@ func populateDatabase(db *gorm.DB) {
 	}
 
 	weddingDetails := []models.PollWedding{
-		{PollID: polls[2].ID, WeddingInvite: "Fellow Wizards and Witches", KnowCoupleSince: 394, KnowCoupleFromWhere: "Hogwarts", WeddingHighlight: "Dueling Bridesmaids", CoupleWish: "May our wands never falter"},
+		{PollID: polls[2].ID, WeddingInvite: "groom", KnowCoupleSince: 20, KnowCoupleFromWhere: "In einem Café", WeddingHighlight: "food", CoupleWish: "Super Flitterwochen "},
+		{PollID: polls[2].ID, WeddingInvite: "bride", KnowCoupleSince: 10, KnowCoupleFromWhere: "Universität", WeddingHighlight: "afterParty", CoupleWish: "Glück und Gesundheit"},
 	}
 	for _, detail := range weddingDetails {
 		if err := db.Create(&detail).Error; err != nil {

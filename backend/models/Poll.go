@@ -13,7 +13,7 @@ type Poll struct {
 
 type PollParty struct {
 	gorm.Model
-	PollID                uint   `gorm:"uniqueIndex"`
+	PollID                uint
 	Poll                  Poll   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	SongToBePlayed        string `gorm:"size:255;not null"`
 	CurrentAlcoholLevel   int
@@ -24,7 +24,7 @@ type PollParty struct {
 
 type PollWedding struct {
 	gorm.Model
-	PollID              uint   `gorm:"uniqueIndex"`
+	PollID              uint
 	Poll                Poll   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	WeddingInvite       string `gorm:"size:255;not null"`
 	KnowCoupleSince     int
