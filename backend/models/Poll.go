@@ -32,3 +32,9 @@ type PollWedding struct {
 	WeddingHighlight    string `gorm:"size:255"`
 	CoupleWish          string `gorm:"size:255"`
 }
+
+const Dancing = "dancing"
+const Drinking = "drinking"
+const Eating = "eating"
+const Singing = "singing"
+const Beerpong = "beerpong"

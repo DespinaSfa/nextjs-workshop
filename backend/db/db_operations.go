@@ -56,6 +56,22 @@ func AddPollResponse(db *gorm.DB, jsonResponse []byte) error {
 			FavoriteActivity:      partyResponse.FavoriteActivity,
 			WishSnack:             partyResponse.WishSnack,
 		}
+
+		if dbModel.CurrentAlcoholLevel < 0 || dbModel.CurrentAlcoholLevel > 5 {
+			return errors.New("current alcohol level must be between 0 and 5")
+		}
+		if dbModel.PreferredAlcoholLevel < 0 || dbModel.PreferredAlcoholLevel > 5 {
+			return errors.New("preferred alcohol level must be between 0 and 5")
+		}
+
+		if dbModel.FavoriteActivity != models.Dancing &&
+			dbModel.FavoriteActivity != models.Drinking &&
+			dbModel.FavoriteActivity != models.Eating &&
+			dbModel.FavoriteActivity != models.Singing &&
+			dbModel.FavoriteActivity != models.Beerpong {
+			return errors.New("favorite activity must be one of: dancing, drinking, eating, singing, beerpong")
+		}
+
 		return db.Create(&dbModel).Error
 
 	case "wedding":
@@ -63,6 +79,7 @@ func AddPollResponse(db *gorm.DB, jsonResponse []byte) error {
 		if err := json.Unmarshal(response.Data, &weddingResponse); err != nil {
 			return err
 		}
+
 		// Convert PollWeddingResponse to PollWedding (your DB model)
 		dbModel := models.PollWedding{
 			PollID:              response.PollID,
@@ -72,6 +89,24 @@ func AddPollResponse(db *gorm.DB, jsonResponse []byte) error {
 			WeddingHighlight:    weddingResponse.WeddingHighlight,
 			CoupleWish:          weddingResponse.CoupleWish,
 		}
+
+		// Check wedding invite
+		if dbModel.WeddingInvite != "bride" && dbModel.WeddingInvite != "groom" && dbModel.WeddingInvite != "both" {
+			return errors.New("wedding invite must be one of: bride, groom, both")
+		}
+
+		// Check acquaintance duration
+		if dbModel.KnowCoupleSince < 1 || dbModel.KnowCoupleSince > 30 {
+			return errors.New("know couple since must be between 1 and 30 years")
+		}
+
+		// Wedding highlight check
+		validHighlights := map[string]bool{"wedding": true, "food": true, "dance": true, "program": true, "afterParty": true}
+		if _, ok := validHighlights[dbModel.WeddingHighlight]; !ok {
+			return errors.New("wedding highlight must be one of: wedding, food, dance, program, afterParty")
+		}
+
+		// Create record in the database
 		return db.Create(&dbModel).Error
 
 	default:
