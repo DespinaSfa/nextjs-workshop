@@ -4,31 +4,31 @@ import "gorm.io/gorm"
 
 type Poll struct {
 	gorm.Model
+	UserID      uint `gorm:"index;not null"` // Ensures faster queries on UserID and that it must be provided
 	User        User
-	UserID      uint
-	Title       string
-	Description string
-	PollType    string
+	Title       string `gorm:"size:255;not null"`
+	Description string `gorm:"type:text"` // Allows longer text for descriptions
+	PollType    string `gorm:"size:100;index;not null"`
 }
 
 type PollParty struct {
 	gorm.Model
-	Poll                  Poll
-	PollID                uint
-	SongToBePlayed        string
+	PollID                uint   `gorm:"uniqueIndex"`
+	Poll                  Poll   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	SongToBePlayed        string `gorm:"size:255;not null"`
 	CurrentAlcoholLevel   int
 	PreferredAlcoholLevel int
-	FavoriteActivity      string
-	WishSnack             string
+	FavoriteActivity      string `gorm:"size:255"`
+	WishSnack             string `gorm:"size:255"`
 }
 
 type PollWedding struct {
 	gorm.Model
-	Poll                Poll
-	PollID              uint
-	WeddingInvite       string
+	PollID              uint   `gorm:"uniqueIndex"`
+	Poll                Poll   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	WeddingInvite       string `gorm:"size:255;not null"`
 	KnowCoupleSince     int
-	KnowCoupleFromWhere string
-	WeddingHighlight    string
-	CoupleWish          string
+	KnowCoupleFromWhere string `gorm:"size:255"`
+	WeddingHighlight    string `gorm:"size:255"`
+	CoupleWish          string `gorm:"size:255"`
 }

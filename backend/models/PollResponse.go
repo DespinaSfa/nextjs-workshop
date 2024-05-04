@@ -1,23 +1,23 @@
 package models
 
 type PollResponse struct {
-	Title       string
-	Description string
-	PollType    string
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	PollType    string `json:"pollType"`
 }
 
 type PollPartyResponse struct {
-	SongToBePlayed        string
-	CurrentAlcoholLevel   int
-	PreferredAlcoholLevel int
-	FavoriteActivity      string
-	WishSnack             string
+	SongToBePlayed        string `json:"songToBePlayed"`
+	CurrentAlcoholLevel   int    `json:"currentAlcoholLevel"`
+	PreferredAlcoholLevel int    `json:"preferredAlcoholLevel"`
+	FavoriteActivity      string `json:"favoriteActivity"`
+	WishSnack             string `json:"wishSnack"`
 }
 
 type PollWeddingResponse struct {
-	WeddingInvite       string
-	KnowCoupleSince     int
-	KnowCoupleFromWhere string
-	WeddingHighlight    string
-	CoupleWish          string
+	WeddingInvite       string `json:"weddingInvite"`
+	KnowCoupleSince     int    `json:"knowCoupleSince"`
+	KnowCoupleFromWhere string `json:"knowCoupleFromWhere"`
+	WeddingHighlight    string `json:"weddingHighlight"`
+	CoupleWish          string `json:"coupleWish"`
 }
