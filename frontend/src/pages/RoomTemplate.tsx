@@ -1,11 +1,12 @@
-import PollHeader from "../Components/PollHeader";
+import PageHeader from "../Components/PageHeader/PageHeader";
+import PollHeader from "../Components/PollHeader/PollHeader";
 
 const RoomTemplate = () => {
     return (
         <>
-            <div> RoomTemplate</div>
+            <PageHeader heading="Create Room Pool" link="/selectTemplate"/>
             <PollHeader></PollHeader>
-            <p> Und  hier kommt dann das Template hin... Fragen & Antwortoptionen siehe Moodle</p>
+            <p> Und  hier kommt dann das Template hin... Fragen & Antwortoptionen siehe Notion</p>
         </>
      );
   };

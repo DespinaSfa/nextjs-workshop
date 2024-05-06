@@ -4,24 +4,26 @@ import TextField from '@mui/material/TextField';
 
 interface InputFieldProps {
     label: string;
+    placeholder: string;
     onChange: (value: string) => void;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, onChange }) => {
+const InputField: React.FC<InputFieldProps> = ({ label, placeholder, onChange }) => {
     const [internalValue, setInternalValue] = React.useState('');
 
     return (
         <Box
             component="form"
             sx={{
-                '& > :not(style)': { m: 1, width: '60ch', height: '100px' }, // change width here
+                '& > :not(style)': { m: 1, width: '800px', height: '80px' }, // change width here
             }}
             noValidate
             autoComplete="off"
         >
             <TextField 
                 id="outlined-basic" 
-                label={label} 
+                label={label}
+                placeholder={placeholder}
                 variant="outlined" 
                 value={internalValue}
                 onChange={(event) => {

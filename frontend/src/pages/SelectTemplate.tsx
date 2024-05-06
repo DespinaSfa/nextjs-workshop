@@ -1,18 +1,12 @@
 import { Outlet, Link } from "react-router-dom";
 import c from './Page_styles.module.scss';
 import Button from "@mui/material/Button";
-import { IconButton } from "@mui/material";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PageHeader from "../Components/PageHeader/PageHeader";
 
 const SelectTemplate = () => {
     return(
         <div className={c.content}>
-            <div className={c.container}>
-                <IconButton component={Link} to='/'>
-                    <ArrowBackIcon  className={c.backButton} />
-                </IconButton>
-                <p className={c.heading}>Select poll type</p>
-            </div>
+            <PageHeader heading="Select poll type" link="/"/>
             <div className={c.selectContainer}>
                 <Button className={`${c.selectButton} ${c.party}`} variant="contained" component={Link} to='partyTemplate'>
                     <div className={c.buttonText}>Party</div>
