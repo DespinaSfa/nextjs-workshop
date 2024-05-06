@@ -11,13 +11,13 @@ const PollHeader = () => {
          <InputField label={'Heading'} placeholder={'Name of your poll'} onChange={function (value: string): void {
             //TODO: Save Inputs
          } } />
-          <p className={c.heading}>
+         <p className={c.heading}>
             2. Write A Nice Description
          </p>
          <InputField label={'Description'} placeholder={'This poll is about...'} onChange={function (value: string): void {
             //TODO: Save Inputs
          } } />
-          <p className={c.heading}>
+         <p className={c.heading}>
             3. Check The Poll
          </p>
        </div> 
