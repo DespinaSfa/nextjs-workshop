@@ -16,7 +16,7 @@ func CreatePoll(db *gorm.DB, addPoll *models.Poll) error {
 	return nil
 }
 
-func AddPollResponse(db *gorm.DB, jsonResponse []byte) error {
+func CreatePollResponse(db *gorm.DB, jsonResponse []byte) error {
 
 	//example usage:
 	//partyJson := `{
@@ -190,8 +190,8 @@ func populateDatabase(db *gorm.DB) {
 
 	// Create polls
 	polls := []models.Poll{
-		{UserID: users[1].ID, Title: "Unsere Hochzeit", Description: "Hallo. Wir hoffen euch gefällt unsere Hochzeit. Für ein Spiel später füllt bitte diese kleine Umfrage aus. Vielen Dank! Euer Simon und eure Anna", PollType: "wedding"}, {UserID: users[1].ID, Title: "Elvis Song Poll", Description: "Which song rocks your blue suede shoes?", PollType: "music"},
-		{UserID: users[2].ID, Title: "Freds Fette Fete", Description: "Moin, moin! Diese Umfrage habe ich erstellt, damit ihr meine Party bewerten könnt. Die nächste wird dadurch noch geiler, versprochen!", PollType: "party"}}
+		{UserID: users[1].ID, Title: "Unsere Hochzeit", Description: "Hallo. Wir hoffen euch gefällt unsere Hochzeit. Für ein Spiel später füllt bitte diese kleine Umfrage aus. Vielen Dank! Euer Simon und eure Anna", PollType: "wedding"},
+		{UserID: users[1].ID, Title: "Freds Fette Fete", Description: "Moin, moin! Diese Umfrage habe ich erstellt, damit ihr meine Party bewerten könnt. Die nächste wird dadurch noch geiler, versprochen!", PollType: "party"}}
 	for i := range polls {
 		if err := db.Create(&polls[i]).Error; err != nil {
 			fmt.Printf("Failed to create poll %s: %v\n", polls[i].Title, err)
@@ -201,7 +201,7 @@ func populateDatabase(db *gorm.DB) {
 
 	// Create related party and wedding details
 	partyDetails := []models.PollParty{
-		{PollID: polls[0].ID, SongToBePlayed: "tempo - cro", CurrentAlcoholLevel: 1, PreferredAlcoholLevel: 3, FavoriteActivity: "dance", WishSnack: "Pizza"},
+		{PollID: polls[1].ID, SongToBePlayed: "tempo - cro", CurrentAlcoholLevel: 1, PreferredAlcoholLevel: 3, FavoriteActivity: "dance", WishSnack: "Pizza"},
 		{PollID: polls[1].ID, SongToBePlayed: "Friesenjung - Ski Aggu", CurrentAlcoholLevel: 5, PreferredAlcoholLevel: 1, FavoriteActivity: "karaoke", WishSnack: "Brownies"},
 	}
 	for _, detail := range partyDetails {
@@ -212,8 +212,8 @@ func populateDatabase(db *gorm.DB) {
 	}
 
 	weddingDetails := []models.PollWedding{
-		{PollID: polls[2].ID, WeddingInvite: "groom", KnowCoupleSince: 20, KnowCoupleFromWhere: "In einem Café", WeddingHighlight: "food", CoupleWish: "Super Flitterwochen "},
-		{PollID: polls[2].ID, WeddingInvite: "bride", KnowCoupleSince: 10, KnowCoupleFromWhere: "Universität", WeddingHighlight: "afterParty", CoupleWish: "Glück und Gesundheit"},
+		{PollID: polls[0].ID, WeddingInvite: "groom", KnowCoupleSince: 20, KnowCoupleFromWhere: "In einem Café", WeddingHighlight: "food", CoupleWish: "Super Flitterwochen "},
+		{PollID: polls[0].ID, WeddingInvite: "bride", KnowCoupleSince: 10, KnowCoupleFromWhere: "Universität", WeddingHighlight: "afterParty", CoupleWish: "Glück und Gesundheit"},
 	}
 	for _, detail := range weddingDetails {
 		if err := db.Create(&detail).Error; err != nil {
