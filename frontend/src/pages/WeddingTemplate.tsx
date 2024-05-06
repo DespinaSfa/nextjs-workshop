@@ -6,7 +6,7 @@ const WeddingTemplate = () => {
         <>
             <PageHeader heading="Create Wedding Pool" link="/selectTemplate"/>
             <PollHeader></PollHeader>
-            <p> Und  hier kommt dann das Template hin... Fragen & Antwortoptionen siehe Notion</p>
+            <p>Frage 1</p>
         </>
      );
   };
