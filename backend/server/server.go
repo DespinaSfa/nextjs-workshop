@@ -11,11 +11,7 @@ import (
 func InitServer() {
 	dbConfig := config.LoadConfig()
 
-	_, err := db.SetupDatabase(dbConfig)
-	if err != nil {
-		panic("error setting up database: " + err.Error())
-	}
-
+	db.SetupDatabase(dbConfig)
 	r := chi.NewRouter()
 
 	setupMiddleware(r)
@@ -23,8 +19,8 @@ func InitServer() {
 
 	const port int = 3001
 
-	fmt.Printf("\nServer running on http://localhost:%d", port)
-	err = http.ListenAndServe(":3001", r)
+	fmt.Printf("Server running on http://localhost:%d\n", port)
+	err := http.ListenAndServe(":3001", r)
 	if err != nil {
 		panic(err)
 	}

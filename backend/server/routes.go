@@ -1,7 +1,6 @@
 package server
 
 import (
-	"backend/db"
 	_ "backend/docs"
 	"encoding/json"
 	"fmt"
@@ -43,7 +42,7 @@ func setupRoutes(r *chi.Mux) {
 	r.Get("/polls", func(w http.ResponseWriter, r *http.Request) {
 
 		// Read req body
-		/*body, err := ioutil.ReadAll(r.Body)
+		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			fmt.Print("Error reading request body:", err)
 			http.Error(w, "Failed to read request body", http.StatusInternalServerError)
@@ -64,27 +63,20 @@ func setupRoutes(r *chi.Mux) {
 
 		// Extract userID parsed req body
 		userID := requestBody.UserID
-		fmt.Print("Extracted UserID:", userID) */
+		fmt.Print("Extracted UserID:", userID)
 
-		// Read user polls
-		polls, err := db.ReadUserPolls(2)
+		// Respond with dummy JSON response
+		response := map[string]string{"message": "Successfully processed request", "userID": userID}
+		jsonResponse, err := json.Marshal(response)
 		if err != nil {
-			fmt.Println("Error reading user polls:", err)
-			http.Error(w, "Failed to read user polls", http.StatusInternalServerError)
-			return
-		}
-
-		// Marshal response to JSON
-		pollsJSON, err := json.Marshal(polls)
-		if err != nil {
-			fmt.Println("Error marshaling JSON response:", err)
+			fmt.Print("Error marshaling JSON response:", err)
 			http.Error(w, "Failed to marshal JSON response", http.StatusInternalServerError)
 			return
 		}
 
-		// Set response headers and write JSON response
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(pollsJSON)
+
+		w.Write(jsonResponse)
 	})
 
 	// POST: /polls -> Create a poll
