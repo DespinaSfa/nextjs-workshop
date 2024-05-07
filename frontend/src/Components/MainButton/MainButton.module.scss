@@ -1,0 +1,17 @@
+.Button {
+    background-color: #DBF881 !important;
+    color: #000000 !important;
+    font-family: "Raleway" !important;
+    font-size: 0.6rem !important;
+    font-weight: 700 !important;
+    padding: 0.6rem 1rem !important;
+    border-radius: 0rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    
+    &:hover {
+        background-color: #887EF1 !important;
+        color: #ffffff !important;
+    }
+
+}
