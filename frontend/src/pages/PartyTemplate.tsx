@@ -1,20 +1,33 @@
 import GenerateButton from "../Components/GenerateButton/GenerateButton";
+import InputField from "../Components/InputField";
+import MultipleChoiceSelector from "../Components/MultipleChoiceSelector";
 import PageHeader from "../Components/PageHeader/PageHeader";
 import PollHeader from "../Components/PollHeader/PollHeader";
+import RangeSelector from "../Components/RangeSelector";
 import c from './Page_styles.module.scss';
 
 const PartyTemplate = () => {
     return (
         <>
-            <PageHeader heading="Create Party Pool" link="/selectTemplate"/>
+            <PageHeader heading="Create Party Poll" link="/selectTemplate" />
             <div className={c.template}>
-                <PollHeader></PollHeader>
-                <p> Und  hier kommt dann das Template hin... Fragen & Antwortoptionen siehe Notion</p>
+            <PollHeader />
+                <p className={c.question}>Which songs should definitely be played tonight? 📻</p>
+                <InputField label={"Songs"} placeholder={"I would like to listen to..."} onChange={function (value: string): void { }} />
+                <p className={c.question}>What is your current alcohol level? 📈</p>
+                <RangeSelector min={0} max={5} step={1} onChange={function (value: number): void { }} /> <br />
+                <p className={c.question}>What alcohol level have you set as your goal for today? 🍺</p>
+                <RangeSelector min={0} max={5} step={1} onChange={function (value: number): void { }} /><br />
+                <p className={c.question}>What is your favortite party activity?</p>
+                <MultipleChoiceSelector options={['Dancing 💃', 'Shout along to party hits or karaoke 🎤', 
+                'PartyGames (Bierpong, Rage-Cage, etc.) 🍻 ', 'Chilling and chatting a bit outside with friends 🗨️']} onChange={function (option: string): void { }} />
+                <p className={c.question}>Which snacks or drinks would you like for the next party? 🍔</p>
+                <InputField label={"Snack/Drink"} placeholder={"I would like to eat/drink..."} onChange={function (value: string): void { }} />
                 <p className={c.heading}>
                     4. Everything Correct? Then Generate Your Poll!
                 </p>
                 <div className={c.generateButton}>
-                    <GenerateButton label={""} onClick={function (): void {} } />
+                    <GenerateButton label={""} onClick={function (): void { } } />
                 </div>
             </div>
         </>

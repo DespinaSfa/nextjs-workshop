@@ -9,7 +9,7 @@ import c from './Page_styles.module.scss';
 const WeddingTemplate = () => {
     return (
         <>
-            <PageHeader heading="Create Wedding Pool" link="/selectTemplate"/>
+            <PageHeader heading="Create Wedding Poll" link="/selectTemplate"/>
             <div className={c.template}>
                 <PollHeader />
                 <p className={c.question}>Who did you invite to the wedding?</p>
