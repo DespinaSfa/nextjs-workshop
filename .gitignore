@@ -1,0 +1,5 @@
+#Ignore docker data
+./data 
+
+# misc
+.DS_Store
