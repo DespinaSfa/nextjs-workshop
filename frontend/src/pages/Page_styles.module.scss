@@ -11,6 +11,20 @@
     justify-content: space-around;
 }
 
+.template {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-left: 80px;
+    margin-bottom: 80px;
+}
+
+.question {
+    font-family: "Raleway";
+    font-size: 20px;
+    font-weight: 600;
+}
+
 .text {
     width: 900px;
     font-family: "Raleway";
@@ -25,6 +39,10 @@
 .button {
     align-self: center;
     padding-top: 80px;
+}
+
+.generateButton {
+    align-self: center;
 }
 
 .selectContainer {
@@ -69,4 +87,9 @@
     font-size: 24px;
     width: 160px;
     height: 60px;
+}
+
+.heading {
+    font-family: "Raleway";
+    font-size: 24px;
 }
