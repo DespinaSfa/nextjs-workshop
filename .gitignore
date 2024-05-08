@@ -1,5 +1,8 @@
 #Ignore docker data
-./data 
+/data 
+
+#Ignore GoLand folder
+/.idea
 
 # misc
 .DS_Store
