@@ -1,5 +1,6 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Header from "../Components/Header/Header";
+import styles from "./Page_styles.module.scss";
 
 const Layout = () => {
     return (
@@ -8,7 +9,9 @@ const Layout = () => {
               share across all the pages on your site, like navigation. -> add header and footer here */}
           <Header />
     
-          <Outlet />
+          <div className={styles["page-margin"]}>
+           <Outlet/>
+          </div>
         </div>
       );
 };

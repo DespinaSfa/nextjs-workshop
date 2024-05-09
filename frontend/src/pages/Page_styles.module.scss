@@ -1,3 +1,7 @@
+.page-margin {
+    margin: 20px;
+}
+
 .landingPage {
     margin: 100px;
     display: flex;
@@ -36,15 +40,15 @@
 }
 
 .selectButton {
-    width: 439px; 
-    height: 720px; 
+    width: 439px;
+    height: 720px;
     padding: 0;
-    color: transparent; 
-  
+    color: transparent;
+
     background-color: transparent !important;
     box-shadow: none !important;
     border: none !important;
-  
+
     background-size: cover;
     cursor: pointer;
     transition: transform 0.3s;
@@ -53,12 +57,15 @@
 .party {
     background-image: url('../images/PartyBackground.png');
 }
+
 .room {
     background-image: url('../images/RoomBackground.png');
 }
+
 .wedding {
     background-image: url('../images/WeddingBackground.png');
 }
+
 .buttonText {
     display: flex;
     justify-content: center;
