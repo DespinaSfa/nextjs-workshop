@@ -212,6 +212,41 @@ func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GenerateQRHandler handles requests to generate QR codes
+func (s *Server) GenerateQRHandler(w http.ResponseWriter, r *http.Request) {
+	type QRRequest struct {
+		URL string `json:"url"`
+	}
+
+	var qrRequest QRRequest
+
+	// Read and decode the request body
+	if err := json.NewDecoder(r.Body).Decode(&qrRequest); err != nil {
+		fmt.Println("Error parsing request body:", err)
+		http.Error(w, "Invalid request format", http.StatusBadRequest)
+		return
+	}
+
+	// Generate the QR code bytes from the URL
+	qrBytes, err := generateQR(qrRequest.URL)
+	if err != nil {
+		fmt.Println("Error generating QR code:", err)
+		http.Error(w, "Failed to generate QR code", http.StatusInternalServerError)
+		return
+	}
+
+	// Set header for content type to 'image/png'
+	w.Header().Set("Content-Type", "image/png")
+	w.WriteHeader(http.StatusOK)
+
+	// Write the QR code byte slice to the response
+	if _, err := w.Write(qrBytes); err != nil {
+		fmt.Println("Error writing response:", err)
+		http.Error(w, "Failed to send QR code", http.StatusInternalServerError)
+		return
+	}
+}
+
 func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollIDStr := chi.URLParam(r, "pollId")
 	pollID, err := strconv.Atoi(pollIDStr)
@@ -235,6 +270,7 @@ func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 	r.Get("/", server.HomeHandler)
 	r.Get("/health", server.HealthHandler)
 
+	r.Get("/qr", server.GenerateQRHandler)
 	r.Get("/polls", server.GetPollsHandler)
 	r.Post("/polls", server.PostPollsHandler)
 	r.Get("/polls/{pollId}", server.GetPollByIDHandler)
