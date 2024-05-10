@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"io"
 	"net/http"
@@ -229,11 +230,92 @@ func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func (s *Server) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	// Parse the refresh token from the request body
+	var requestBody struct {
+		RefreshToken string `json:"refreshToken"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	userID := r.Context().Value("userID").(float64)
+	// Verify the refresh token and get a new access token
+	_, err = RefreshToken(requestBody.RefreshToken, userID)
+	if err != nil {
+		http.Error(w, "Failed to verify refresh token: "+err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	newToken, err := CreateToken(userID)
+	if err != nil {
+		http.Error(w, "Failed to create token: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	newRefreshToken, err := CreateRefreshToken(userID)
+	if err != nil {
+		http.Error(w, "Failed to create refresh token: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Return the new access token
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"token": newToken, "refreshToken": newRefreshToken})
+}
+
+func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	var credentials struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&credentials)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Look up the user in the database
+	user, err := db.GetUserByUsername(credentials.Username)
+	if err != nil {
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
+		return
+	}
+
+	// Check the password
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
+	if err != nil {
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+		return
+	}
+
+	token, err := CreateToken(float64(user.ID))
+	if err != nil {
+		http.Error(w, "Failed to create token", http.StatusInternalServerError)
+		return
+	}
+
+	refreshToken, err := CreateRefreshToken(float64(user.ID))
+	if err != nil {
+		http.Error(w, "Failed to create refresh token", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"token": token, "refreshToken": refreshToken})
+}
+
 func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 	server := &Server{DB: dbInstance}
 	r.Mount("/swagger", httpSwagger.WrapHandler)
 	r.Get("/", server.HomeHandler)
 	r.Get("/health", server.HealthHandler)
+
+	r.Post("/login", server.LoginHandler)
+	r.Post("/refresh-token", server.RefreshToken)
 
 	r.Get("/polls", server.GetPollsHandler)
 	r.Post("/polls", server.PostPollsHandler)

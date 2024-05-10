@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -114,6 +115,18 @@ func CreatePollResponse(db *gorm.DB, jsonResponse []byte) error {
 	}
 }
 
+func GetUserByUsername(username string) (*models.User, error) {
+	var user models.User
+	result := db.Where("username = ?", username).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return &models.User{}, nil
+		}
+		return nil, fmt.Errorf("error querying database: %w", result.Error)
+	}
+	return &user, nil
+}
+
 func ReadUserPolls(userID int) ([]*models.PollInfo, error) {
 	var user *models.User
 	// Check if the user exists
@@ -176,9 +189,9 @@ func populateDatabase(db *gorm.DB) {
 
 	// Populate users
 	users := []models.User{
-		{Username: "CrazyCatLady", PasswordHash: "meowmix"},
-		{Username: "TheRealElvis", PasswordHash: "thankyouverymuch"},
-		{Username: "WannabeWizard", PasswordHash: "alohomora"},
+		{Username: "CrazyCatLady", PasswordHash: hashPassword("meowmix"), Token: "catnip4life"},
+		{Username: "TheRealElvis", PasswordHash: hashPassword("thankyouverymuch"), Token: "blueSuedeShoes"},
+		{Username: "WannabeWizard", PasswordHash: hashPassword("alohomora"), Token: "muggleStruggles"},
 	}
 
 	for i := range users {
@@ -224,4 +237,12 @@ func populateDatabase(db *gorm.DB) {
 
 	fmt.Println("\nDatabase populated successfully ;)")
 
+}
+
+func hashPassword(password string) string {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		panic("Failed to hash password: " + err.Error())
+	}
+	return string(hashedPassword)
 }
