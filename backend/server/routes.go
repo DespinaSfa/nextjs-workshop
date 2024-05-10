@@ -44,7 +44,7 @@ func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 	})
 
 	// GET: /polls -> Get an overview of all polls for Dashboard
-	r.Get("/polls", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/polls/{userID}", func(w http.ResponseWriter, r *http.Request) {
 
 		// Read req body
 		/*body, err := ioutil.ReadAll(r.Body)
@@ -71,7 +71,8 @@ func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 		fmt.Print("Extracted UserID:", userID) */
 
 		// Read user polls
-		polls, err := db.ReadUserPolls(2) // TODO woher kommt die userID dann?
+		userIDInt, err := strconv.Atoi(chi.URLParam(r, "userID"))
+		polls, err := db.ReadUserPolls(userIDInt)
 		if err != nil {
 			fmt.Println("Error reading user polls:", err)
 			http.Error(w, "Failed to read user polls", http.StatusInternalServerError)
