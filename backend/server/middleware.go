@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -40,14 +41,18 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 			return jwtKey, nil
 		})
 		if err != nil {
-			http.Error(w, "Error parsing token", http.StatusUnauthorized)
+			http.Error(w, "Error parsing token"+err.Error(), http.StatusUnauthorized)
 			return
 		}
 
 		// Validate the token and get the claims
-		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			// Call the next handler
-			next.ServeHTTP(w, r)
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			// Extract the user ID from the claims and add it to the request context
+			userID := claims["user_id"].(float64)
+			ctx := context.WithValue(r.Context(), "userID", userID)
+
+			// Call the next handler with the new context
+			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
 			http.Error(w, "Invalid token", http.StatusUnauthorized)
 			return

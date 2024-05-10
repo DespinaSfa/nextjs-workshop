@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -188,9 +189,9 @@ func populateDatabase(db *gorm.DB) {
 
 	// Populate users
 	users := []models.User{
-		{Username: "CrazyCatLady", Password: "meowmix", Token: "catnip4life"},
-		{Username: "TheRealElvis", Password: "thankyouverymuch", Token: "blueSuedeShoes"},
-		{Username: "WannabeWizard", Password: "alohomora", Token: "muggleStruggles"},
+		{Username: "CrazyCatLady", Password: hashPassword("meowmix"), Token: "catnip4life"},
+		{Username: "TheRealElvis", Password: hashPassword("thankyouverymuch"), Token: "blueSuedeShoes"},
+		{Username: "WannabeWizard", Password: hashPassword("alohomora"), Token: "muggleStruggles"},
 	}
 
 	for i := range users {
@@ -236,4 +237,12 @@ func populateDatabase(db *gorm.DB) {
 
 	fmt.Println("\nDatabase populated successfully ;)")
 
+}
+
+func hashPassword(password string) string {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		panic("Failed to hash password: " + err.Error())
+	}
+	return string(hashedPassword)
 }
