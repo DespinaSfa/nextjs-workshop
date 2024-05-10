@@ -248,46 +248,45 @@ func setupRoutes(r *chi.Mux) {
 		json.NewEncoder(w).Encode(map[string]string{"token": newToken, "refreshToken": newRefreshToken})
 	})
 
-}
+	r.Post("/login", func(w http.ResponseWriter, r *http.Request) {
+		var credentials struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-	var credentials struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+		err := json.NewDecoder(r.Body).Decode(&credentials)
+		if err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
 
-	err := json.NewDecoder(r.Body).Decode(&credentials)
-	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
+		// Look up the user in the database
+		user, err := db.GetUserByUsername(credentials.Username)
+		if err != nil {
+			http.Error(w, "Failed to get user", http.StatusInternalServerError)
+			return
+		}
 
-	// Look up the user in the database
-	user, err := db.GetUserByUsername(credentials.Username)
-	if err != nil {
-		http.Error(w, "Failed to get user", http.StatusInternalServerError)
-		return
-	}
+		// Check the password
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
+		if err != nil {
+			http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+			return
+		}
 
-	// Check the password
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
-	if err != nil {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
-		return
-	}
+		token, err := CreateToken(float64(user.ID))
+		if err != nil {
+			http.Error(w, "Failed to create token", http.StatusInternalServerError)
+			return
+		}
 
-	token, err := CreateToken(float64(user.ID))
-	if err != nil {
-		http.Error(w, "Failed to create token", http.StatusInternalServerError)
-		return
-	}
+		refreshToken, err := CreateRefreshToken(float64(user.ID))
+		if err != nil {
+			http.Error(w, "Failed to create refresh token", http.StatusInternalServerError)
+			return
+		}
 
-	refreshToken, err := CreateRefreshToken(float64(user.ID))
-	if err != nil {
-		http.Error(w, "Failed to create refresh token", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"token": token, "refreshToken": refreshToken})
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"token": token, "refreshToken": refreshToken})
+	})
 }
