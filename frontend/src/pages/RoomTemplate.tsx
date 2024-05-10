@@ -1,3 +1,4 @@
+import { Poll } from "@mui/icons-material";
 import GenerateButton from "../Components/GenerateButton/GenerateButton";
 import InputField from "../Components/InputField";
 import MultipleChoiceSelector from "../Components/MultipleChoiceSelector";
@@ -11,12 +12,13 @@ const RoomTemplate = () => {
         <>
             <PageHeader heading="Create Room Poll" link="/selectTemplate"/>
             <div className={c.template}>
+            <PollHeader />
             <p className={c.question}>How do you like the space overall?</p>
-                <RangeSelector min={0} max={10} step={1} onChange={function (value: number): void { }} />
+                <RangeSelector min={0} max={10} step={1} onChange={function (value: number): void { }} /> <br />
                 <p className={c.question}>What would you change about the space if you could?</p>
                 <InputField label={"Changes"} placeholder={"I would change..."} onChange={function (value: string): void { }} />
                 <p className={c.question}>How do you like the furnishings and decorations of the room?</p>
-                <RangeSelector min={0} max={10} step={1} onChange={function (value: number): void { }} />
+                <RangeSelector min={0} max={10} step={1} onChange={function (value: number): void { }} /> <br />
                 <p className={c.question}>How would you describe the room?</p>
                 <MultipleChoiceSelector options={['Stylish', 'Cozy', 'Sterile', 'Spacious', 'Overwhelming', 'Ugly']} onChange={function (option: string): void { }} />
                 <p className={c.question}>What piece of furniture is missing in the room?</p>
