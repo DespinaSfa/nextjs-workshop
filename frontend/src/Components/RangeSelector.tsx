@@ -9,7 +9,7 @@ interface SliderProps {
 }
 
 const SliderComponent: React.FC<SliderProps> = ({ min, max, step, onChange }) => {
-  const defaultValue = (max - min) / 2 + min; 
+  const defaultValue = Math.ceil((max - min) / 2 + min);
 
   const handleSliderChange = (event: Event, value: number | number[]) => {
     if (!Array.isArray(value)) {
