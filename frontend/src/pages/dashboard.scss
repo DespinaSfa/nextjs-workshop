@@ -1,0 +1,32 @@
+.dashboard-title {
+    font-size: 32px;
+    margin-bottom: 0.5rem;
+}
+
+.spread {
+    display: flex;
+    justify-content: space-between;
+}
+
+.poll-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.poll-list {
+    background-color: #333333;
+    padding: 1rem 2rem;
+    border-radius: 16px;
+}
+
+.empty-message {
+    text-align: center;
+}
+
+@media (max-width: 750px) {
+    .poll-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
