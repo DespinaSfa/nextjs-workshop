@@ -1,0 +1,27 @@
+.card {
+    background-color: #333333;
+    height: 150px;
+    width: 100%;
+    border-radius: 16px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .card-title {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+    }
+
+    .card-value {
+        font-weight: 700;
+        font-size: 2vw;
+    }
+
+    @media (max-width: 750px) {
+        .card-value {
+            font-size: 4.5vw;
+        }
+    }
+}

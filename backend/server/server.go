@@ -13,7 +13,7 @@ import (
 func InitServer() {
 	dbConfig := config.LoadConfig()
 
-	_, err := db.SetupDatabase(dbConfig)
+	dbInstance, err := db.SetupDatabase(dbConfig)
 	if err != nil {
 		panic("error setting up database: " + err.Error())
 	}
@@ -30,7 +30,7 @@ func InitServer() {
 	}))
 
 	setupMiddleware(r)
-	setupRoutes(r)
+	setupRoutes(r, dbInstance) // Pass the dbInstance to the setupRoutes function
 
 	const port int = 3001
 

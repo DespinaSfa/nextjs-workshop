@@ -189,9 +189,9 @@ func populateDatabase(db *gorm.DB) {
 
 	// Populate users
 	users := []models.User{
-		{Username: "CrazyCatLady", Password: hashPassword("meowmix"), Token: "catnip4life"},
-		{Username: "TheRealElvis", Password: hashPassword("thankyouverymuch"), Token: "blueSuedeShoes"},
-		{Username: "WannabeWizard", Password: hashPassword("alohomora"), Token: "muggleStruggles"},
+		{Username: "CrazyCatLady", PasswordHash: hashPassword("meowmix"), Token: "catnip4life"},
+		{Username: "TheRealElvis", PasswordHash: hashPassword("thankyouverymuch"), Token: "blueSuedeShoes"},
+		{Username: "WannabeWizard", PasswordHash: hashPassword("alohomora"), Token: "muggleStruggles"},
 	}
 
 	for i := range users {

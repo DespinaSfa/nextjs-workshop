@@ -13,7 +13,6 @@ class Header extends React.Component {
             }
             <MainButton text='Login' link='/login'/>
           </div>
-          <hr/>
         </>
       );
     }
