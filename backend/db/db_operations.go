@@ -114,6 +114,18 @@ func CreatePollResponse(db *gorm.DB, jsonResponse []byte) error {
 	}
 }
 
+func GetUserByUsername(username string) (*models.User, error) {
+	var user models.User
+	result := db.Where("username = ?", username).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return &models.User{}, nil
+		}
+		return nil, fmt.Errorf("error querying database: %w", result.Error)
+	}
+	return &user, nil
+}
+
 func ReadUserPolls(userID int) ([]*models.PollInfo, error) {
 	var user *models.User
 	// Check if the user exists

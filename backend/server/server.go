@@ -31,6 +31,7 @@ func InitServer() {
 
 	setupMiddleware(r)
 	setupRoutes(r)
+	r.Post("/login", loginHandler)
 
 	const port int = 3001
 

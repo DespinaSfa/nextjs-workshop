@@ -1,67 +1,90 @@
-package main
+package server
 
 import (
-	"net/http"
+	"fmt"
+	"time"
 
-	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/dgrijalva/jwt-go"
 )
 
-type User struct {
-	ID       uint   `gorm:"primaryKey"`
-	Username string `gorm:"unique"`
-	Password string
-}
+var jwtKey = []byte("secret_key")
+var refreshKey = []byte("refresh_secret_key")
 
-func BasicAuth(db *gorm.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		username, password, ok := c.Request.BasicAuth()
-		if !ok {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
+func CreateToken(userID uint64) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
 
-		var user User
-		if err := db.Where("username = ?", username).First(&user).Error; err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
+	claims := token.Claims.(jwt.MapClaims)
+	claims["authorized"] = true
+	claims["user_id"] = userID
+	claims["exp"] = time.Now().Add(time.Minute * 24).Unix()
 
-		if user.Password != password {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		c.Next()
-	}
-}
-
-func main() {
-	// Verbindung zur Datenbank herstellen
-	dsn := "user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		panic("Failed to connect to database")
+		return "", err
 	}
 
-	// Automatisches Migrations
-	db.AutoMigrate(&User{})
+	return tokenString, nil
+}
 
-	// Beispielbenutzer erstellen (optional)
-	db.Create(&User{Username: "username", Password: "password"})
+func ParseToken(tokenStr string) (bool, error) {
+	claims := &jwt.MapClaims{}
 
-	// Router initialisieren
-	router := gin.Default()
-
-	// Middleware für die Basic-Auth hinzufügen
-	router.Use(BasicAuth(db))
-
-	// Beispielroute
-	router.GET("/api/data", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "This is sensitive data!"})
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
 	})
 
-	// Server starten
-	router.Run(":8080")
+	if err != nil {
+		return false, err
+	}
+
+	if claims, ok := token.Claims.(*jwt.MapClaims); ok && token.Valid {
+		_ = (*claims)["user_id"]
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func RefreshToken(refreshTokenStr string, userID uint64) (string, error) {
+	claims := &jwt.MapClaims{}
+
+	token, err := jwt.ParseWithClaims(refreshTokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return refreshKey, nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := token.Claims.(*jwt.MapClaims); ok && token.Valid {
+		userIdFromToken := uint64((*claims)["user_id"].(float64))
+		if userIdFromToken != userID {
+			return "", fmt.Errorf("invalid refresh token")
+		}
+
+		newToken, err := CreateToken(userIdFromToken)
+		if err != nil {
+			return "", err
+		}
+
+		return newToken, nil
+	}
+
+	return "", fmt.Errorf("invalid refresh token")
+}
+
+func CreateRefreshToken(userID uint64) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["authorized"] = true
+	claims["user_id"] = userID
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	tokenString, err := token.SignedString(refreshKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
