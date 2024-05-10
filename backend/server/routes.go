@@ -159,8 +159,6 @@ func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 		fmt.Println("Poll ID:", pollIDStr) // Debugging line
 
 		pollID, err := strconv.Atoi(pollIDStr)
-		fmt.Print("pollIDStr!!!!!!!!>")
-		fmt.Println(pollIDStr)
 
 		if err != nil {
 			http.Error(w, "Invalid poll ID", http.StatusBadRequest)
