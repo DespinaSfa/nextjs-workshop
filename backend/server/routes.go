@@ -22,20 +22,24 @@ type Server struct {
 func (s *Server) HealthHandler(w http.ResponseWriter, _ *http.Request) {
 	_, err := w.Write([]byte("OK"))
 	if err != nil {
-		panic(err)
+		fmt.Println("Error writing response:", err)
+		http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		return
 	}
 }
 
-func (s *Server) HomeHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HomeHandler(w http.ResponseWriter, _ *http.Request) {
 	_, err := w.Write([]byte("Hello World :)"))
 	if err != nil {
-		panic(err)
+		fmt.Println("Error writing response:", err)
+		http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		return
 	}
 }
 
-func (s *Server) GetPollsHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetPollsHandler(w http.ResponseWriter, _ *http.Request) {
 	// Read user polls
-	polls, err := db.ReadUserPolls(2) // TODO woher kommt die userID dann?
+	polls, err := db.ReadUserPolls(2) // TODO User ID kommt von Maiks Auth :)
 	if err != nil {
 		fmt.Println("Error reading user polls:", err)
 		http.Error(w, "Failed to read user polls", http.StatusInternalServerError)
@@ -50,7 +54,12 @@ func (s *Server) GetPollsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(pollsJSON)
+	_, err = w.Write(pollsJSON)
+	if err != nil {
+		fmt.Println("Error writing response:", err)
+		http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +124,6 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollIDStr := chi.URLParam(r, "pollId")
-	fmt.Println("Poll ID:", pollIDStr) // Debugging line
 
 	pollID, err := strconv.Atoi(pollIDStr)
 
