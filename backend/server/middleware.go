@@ -15,7 +15,7 @@ func setupMiddleware(r *chi.Mux) {
 	r.Use(middleware.Recoverer) //recover from panics without crashing the server return 500
 	//probably add something like
 	r.Use(corsMiddleware)
-	r.Use(AuthenticationMiddleware)
+	//r.Use(AuthenticationMiddleware)
 }
 
 func AuthenticationMiddleware(next http.Handler) http.Handler {

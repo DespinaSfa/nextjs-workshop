@@ -13,7 +13,7 @@ import (
 // @title           PartyPoll API
 // @version         1.0
 // @description     This is the API for the PartyPoll web application
-// @host            http://localhost:3001
+// @host            localhost:3001
 func InitServer() {
 	dbConfig := config.LoadConfig()
 
