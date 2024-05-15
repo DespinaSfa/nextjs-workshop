@@ -7,37 +7,27 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"strconv"
+
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"io"
-	"net/http"
-	"strconv"
 )
 
 type Server struct {
 	DB *gorm.DB
 }
 
-func (s *Server) HealthHandler(w http.ResponseWriter, _ *http.Request) {
-	_, err := w.Write([]byte("OK"))
-	if err != nil {
-		fmt.Println("Error writing response:", err)
-		http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		return
-	}
-}
-
-func (s *Server) HomeHandler(w http.ResponseWriter, _ *http.Request) {
-	_, err := w.Write([]byte("Hello World :)"))
-	if err != nil {
-		fmt.Println("Error writing response:", err)
-		http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		return
-	}
-}
-
+// GetPollsHandler godoc
+// @Summary  Get all polls w/o results
+// @Tags Polls
+// @Produce      json
+// @Success      200  {array}   models.PollInfo
+//
+// @Router       /polls [get]
 func (s *Server) GetPollsHandler(w http.ResponseWriter, _ *http.Request) {
 	// Read user polls
 	polls, err := db.ReadUserPolls(2) // TODO User ID kommt von Maiks Auth :)
@@ -63,6 +53,15 @@ func (s *Server) GetPollsHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
+// PostPollsHandler godoc
+// @Summary Post a poll
+// @Tags Polls
+// @Accepts      json
+// @Success      200  {array}   models.PollInfo
+//
+//	@Param			poll	body		models.PollInfo	true	"Add Poll"
+//
+// @Router       /polls [post]
 func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 	// Read the request body
 	body, err := io.ReadAll(r.Body)
@@ -123,6 +122,39 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// DeletePollByIDHandler godoc TODO
+//
+//		@Summary		Delete a poll
+//	    @Tags           Polls
+//		@Accept			json
+//		@Produce		json
+//		@Param			id	path		int	true	"Poll ID"	Format(int64)
+//		@Success		204	string Poll successfully deleted
+//		@Router			/polls/{id} [delete]
+func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
+	pollIDStr := chi.URLParam(r, "pollId")
+	pollID, err := strconv.Atoi(pollIDStr)
+	if err != nil {
+		http.Error(w, "Invalid poll ID", http.StatusBadRequest)
+		return
+	}
+
+	err = db.DeletePollByID(s.DB, pollID)
+	if err != nil {
+		http.Error(w, "Failed to delete poll", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// GetPollByIDHandler godoc TODO
+// @Summary  Get a poll and it's results
+// @Tags Polls
+// @Produce      json
+// @Success      200  string Add model
+// @Param		 id	path		int	true	"Poll ID"	Format(int64)
+// @Router       /polls/{id} [get]
 func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollIDStr := chi.URLParam(r, "pollId")
 
@@ -158,6 +190,13 @@ func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// PostPollByIDHandler godoc TODO
+// @Summary  Post a poll result
+// @Tags Polls
+// @Produce      json
+// @Success      200   string Poll result added successfully
+// @Param		 id	path		int	true	"Poll ID"	Format(int64)
+// @Router       /polls/{id} [post]
 func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollIDStr := chi.URLParam(r, "pollId")
 
@@ -213,23 +252,10 @@ func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
-	pollIDStr := chi.URLParam(r, "pollId")
-	pollID, err := strconv.Atoi(pollIDStr)
-	if err != nil {
-		http.Error(w, "Invalid poll ID", http.StatusBadRequest)
-		return
-	}
-
-	err = db.DeletePollByID(s.DB, pollID)
-	if err != nil {
-		http.Error(w, "Failed to delete poll", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
-}
-
+// RefreshToken godoc TODO
+// @Summary Create a refresh token
+// @Tags Auth
+// @Router	/refresh-token [post]
 func (s *Server) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	// Parse the refresh token from the request body
 	var requestBody struct {
@@ -266,6 +292,10 @@ func (s *Server) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"token": newToken, "refreshToken": newRefreshToken})
 }
 
+// LoginHandler godoc TODO
+// @Summary  Login an existing user
+// @Tags Auth
+// @Router       /login [post]
 func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var credentials struct {
 		Username string `json:"username"`
@@ -311,15 +341,15 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 	server := &Server{DB: dbInstance}
 	r.Mount("/swagger", httpSwagger.WrapHandler)
-	r.Get("/", server.HomeHandler)
-	r.Get("/health", server.HealthHandler)
+	//r.Get("/", server.HomeHandler)
+	//r.Get("/health", server.HealthHandler)
 
 	r.Post("/login", server.LoginHandler)
 	r.Post("/refresh-token", server.RefreshToken)
 
 	r.Get("/polls", server.GetPollsHandler)
 	r.Post("/polls", server.PostPollsHandler)
+	r.Delete("/polls/{pollId}", server.DeletePollByIDHandler)
 	r.Get("/polls/{pollId}", server.GetPollByIDHandler)
 	r.Post("/polls/{pollId}", server.PostPollByIDHandler)
-	r.Delete("/polls/{pollId}", server.DeletePollByIDHandler)
 }

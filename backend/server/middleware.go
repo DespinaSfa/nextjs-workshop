@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"net/http"
 	"strings"
 )
@@ -13,10 +14,8 @@ func setupMiddleware(r *chi.Mux) {
 	r.Use(middleware.Logger)    //log every request
 	r.Use(middleware.Recoverer) //recover from panics without crashing the server return 500
 	//probably add something like
-	//auth middleware
+	r.Use(corsMiddleware)
 	r.Use(AuthenticationMiddleware)
-
-	//CORSMiddleware
 }
 
 func AuthenticationMiddleware(next http.Handler) http.Handler {
@@ -58,4 +57,17 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 			return
 		}
 	})
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	corsOptions := cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}
+
+	return cors.New(corsOptions).Handler(next)
 }
