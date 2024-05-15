@@ -75,7 +75,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 
 	type PollPostBody struct {
 		UserID      uint   `json:"userID"`
-		TemplateNr  int    `json:"templateNr"`
+		PollType    string `json:"pollType"`
 		Title       string `json:"title"`
 		Description string `json:"description"`
 	}
@@ -94,6 +94,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 		UserID:      userID,
 		Title:       requestBody.Title,
 		Description: requestBody.Description,
+		PollType:    requestBody.PollType,
 	}
 
 	if err := db.CreatePoll(s.DB, newPoll); err != nil {
@@ -122,7 +123,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// DeletePollByIDHandler godoc TODO
+// DeletePollByIDHandler godoc
 //
 //		@Summary		Delete a poll
 //	    @Tags           Polls
@@ -148,7 +149,7 @@ func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GetPollByIDHandler godoc TODO
+// GetPollByIDHandler godoc
 // @Summary  Get a poll and it's results
 // @Tags Polls
 // @Produce      json
@@ -190,12 +191,13 @@ func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// PostPollByIDHandler godoc TODO
+// PostPollByIDHandler godoc
 // @Summary  Post a poll result
 // @Tags Polls
 // @Produce      json
 // @Success      200   string Poll result added successfully
-// @Param		 id	path		int	true	"Poll ID"	Format(int64)
+// @Param		 id	    path  int	                        true	"Poll ID"	Format(int64)
+// @Param		 poll	body  models.GenericPollResponse    true	 "Add poll response"
 // @Router       /polls/{id} [post]
 func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollIDStr := chi.URLParam(r, "pollId")
@@ -341,8 +343,6 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 	server := &Server{DB: dbInstance}
 	r.Mount("/swagger", httpSwagger.WrapHandler)
-	//r.Get("/", server.HomeHandler)
-	//r.Get("/health", server.HealthHandler)
 
 	r.Post("/login", server.LoginHandler)
 	r.Post("/refresh-token", server.RefreshToken)

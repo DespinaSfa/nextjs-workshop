@@ -118,6 +118,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Add poll response",
+                        "name": "poll",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.GenericPollResponse"
+                        }
                     }
                 ],
                 "responses": {
@@ -171,6 +180,9 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.GenericPollResponse": {
+            "type": "object"
+        },
         "models.PollInfo": {
             "type": "object",
             "properties": {

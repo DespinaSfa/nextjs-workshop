@@ -1,4 +1,6 @@
 definitions:
+  models.GenericPollResponse:
+    type: object
   models.PollInfo:
     properties:
       description:
@@ -100,6 +102,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Add poll response
+        in: body
+        name: poll
+        required: true
+        schema:
+          $ref: '#/definitions/models.GenericPollResponse'
       produces:
       - application/json
       responses:
