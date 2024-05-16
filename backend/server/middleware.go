@@ -21,7 +21,7 @@ func setupMiddleware(r *chi.Mux) {
 func AuthenticationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		if r.URL.Path == "/login" {
+		if (r.URL.Path == "/login") || (strings.HasPrefix(r.URL.Path, "/swagger")) {
 			next.ServeHTTP(w, r)
 			return
 		}
