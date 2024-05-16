@@ -28,52 +28,48 @@ const Login = () => {
         },
         body: JSON.stringify({ username, password })
       });
-  
+
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          window.location.href = '/dashboard';
-          console.log('Login successful');
-        } else {
-          setError('Invalid username or password');
-          console.error('Login failed');
-        }
+        localStorage.setItem('token', data.token);
+        window.location.href = '/dashboard';
+        console.log('Login successful');
       } else {
-        setError('An error occurred. Please try again.');
-        console.error('An error occurred during login');
+        setError(data.message);
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
       console.error('Error occurred during login:', error);
     }
   };
-  
+
   return (
     <>
-      <PageHeader heading=" " link="/"/>
-    <div className={c.container}>
-      <h1 className={c.title}>Party Poll</h1> 
-      <hr className={c.separator} /> 
-      <p>Log in to see your polls!</p>
-      <InputField
-        startIcon={<PersonSharpIcon className={c.personSVG} />}
-        label={"Username"}
-        placeholder={"Username"}
-        onChange={handleUsernameChange}
-      />
-      <InputField
-        startIcon={<VpnKeySharpIcon className={c.personSVG} />}
-        label={"Password"}
-        placeholder={"Password"}
-        type="password"
-        onChange={handlePasswordChange}
-      /> 
-      {error && <p className={`${c.error} ${c.errorMessage}`}>{error}</p>}
-      <MainButton text={"Submit"} onClick={handleSubmit} />
-    </div>
-</>
+      <PageHeader heading=" " link="/" />
+      <div className={c.container}>
+        <h1 className={c.title}>Party Poll</h1>
+        <hr className={c.separator} />
+        <p>Log in to see your polls!</p>
+        <InputField
+          startIcon={<PersonSharpIcon className={c.personSVG} />}
+          label={"Username"}
+          placeholder={"Username"}
+          onChange={handleUsernameChange}
+        />
+        <InputField
+          startIcon={<VpnKeySharpIcon className={c.personSVG} />}
+          label={"Password"}
+          placeholder={"Password"}
+          type={'password'}
+          onChange={handlePasswordChange}
+        />
+
+        {error && <p className={c.error}>{error}</p>}
+        <MainButton text={"Submit"} onClick={handleSubmit} />
+      </div>
+    </>
   );
 };
-  
+
 export default Login;

@@ -12,7 +12,7 @@ const WeddingTemplate = () => {
             <PageHeader heading="Create Wedding Poll" link="/selectTemplate"/>
             <div className='template'>
                 <PollHeader />
-                <p className='question'>Who did you invite to the wedding?</p>
+                <p className='question'>Who invited you to the wedding?</p>
                 <MultipleChoiceSelector options={['Bride', 'Groom', 'Both']} onChange={function (option: string): void {} } />
                 <p className='question'>How long have you known the bride and groom?</p>
                 <RangeSelector min={0} max={30} step={1} onChange={function (value: number): void {} } />
