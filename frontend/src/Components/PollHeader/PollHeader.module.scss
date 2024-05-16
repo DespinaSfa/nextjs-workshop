@@ -1,4 +1,11 @@
 .heading {
     font-family: "Raleway";
     font-size: 24px;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 750px) {
+    .heading {
+        font-size: 20px;
+    }
 }

@@ -4,11 +4,14 @@ import "gorm.io/gorm"
 
 type Poll struct {
 	gorm.Model
-	UserID      uint `gorm:"index;not null"` // Ensures faster queries on UserID and that it must be provided
-	User        User
-	Title       string `gorm:"size:255;not null"`
-	Description string `gorm:"type:text"` // Allows longer text for descriptions
-	PollType    string `gorm:"size:100;index;not null"`
+	UserID      uint
+	Title       string
+	Description string
+	PollType    string
+
+	//This tells GORM that there is a one-to-many relationship between Poll and PollParty and between Poll and PollWedding
+	PollParties  []PollParty   `gorm:"foreignKey:PollID"`
+	PollWeddings []PollWedding `gorm:"foreignKey:PollID"`
 }
 
 type PollParty struct {

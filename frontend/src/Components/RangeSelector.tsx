@@ -27,8 +27,7 @@ const SliderComponent: React.FC<SliderProps> = ({ min, max, step, onChange }) =>
       valueLabelDisplay='auto'
       aria-label='slider'
       sx={{
-        width: '100%', 
-        maxWidth: 800, 
+        width: '100%',
         color: '#DBF881'
       }}
       onChange={handleSliderChange} 
