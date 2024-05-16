@@ -6,9 +6,11 @@ interface InputFieldProps {
     label: string;
     placeholder: string;
     onChange: (value: string) => void;
+    startIcon?: JSX.Element;
+    type?: string;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, placeholder, onChange }) => {
+const InputField: React.FC<InputFieldProps> = ({ label, placeholder, onChange, startIcon, type }) => {
     const [internalValue, setInternalValue] = React.useState('');
 
     return (
@@ -21,7 +23,6 @@ const InputField: React.FC<InputFieldProps> = ({ label, placeholder, onChange })
             autoComplete="off"
         >
             <TextField 
-                id="outlined-basic" 
                 label={label}
                 placeholder={placeholder}
                 variant="outlined" 
@@ -30,6 +31,10 @@ const InputField: React.FC<InputFieldProps> = ({ label, placeholder, onChange })
                     setInternalValue(event.target.value);
                     onChange(event.target.value);
                 }} 
+                InputProps={{
+                    startAdornment: startIcon, 
+                }}
+                type={type}
                 sx={{
                     '& .MuiInputLabel-root': { 
                         color: 'white',
