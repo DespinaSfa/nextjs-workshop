@@ -29,8 +29,10 @@ type Server struct {
 //
 // @Router       /polls [get]
 func (s *Server) GetPollsHandler(w http.ResponseWriter, _ *http.Request) {
+	//Get User ID
+	userID := 2 // TODO: Get user ID from Auth
 	// Read user polls
-	polls, err := db.ReadUserPolls(2) // TODO User ID kommt von Maiks Auth :)
+	polls, err := db.ReadUserPolls(userID)
 	if err != nil {
 		fmt.Println("Error reading user polls:", err)
 		http.Error(w, "Failed to read user polls", http.StatusInternalServerError)
@@ -63,6 +65,9 @@ func (s *Server) GetPollsHandler(w http.ResponseWriter, _ *http.Request) {
 //
 // @Router       /polls [post]
 func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
+	//Get User ID
+	userID := uint(2) // TODO: Get user ID from Auth
+
 	// Read the request body
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -74,7 +79,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Print("Request Body:", string(body))
 
 	type PollPostBody struct {
-		UserID      uint   `json:"userID"`
+		UserID      int    `json:"userID"`
 		PollType    string `json:"pollType"`
 		Title       string `json:"title"`
 		Description string `json:"description"`
@@ -87,8 +92,6 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
-
-	userID := requestBody.UserID
 
 	newPoll := &models.Poll{
 		UserID:      userID,
