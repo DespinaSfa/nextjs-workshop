@@ -13,3 +13,17 @@
 .icon {
     font-family: "Gochi Hand";
 }
+
+
+
+.user_handling {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+
+    &__username {
+        color: #ffffff;
+        font-weight: bold;
+    }
+}

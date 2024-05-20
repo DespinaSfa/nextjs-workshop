@@ -1,4 +1,3 @@
-import { Poll } from "@mui/icons-material";
 import GenerateButton from "../Components/GenerateButton/GenerateButton";
 import InputField from "../Components/InputField";
 import MultipleChoiceSelector from "../Components/MultipleChoiceSelector";
@@ -6,8 +5,32 @@ import PageHeader from "../Components/PageHeader/PageHeader";
 import PollHeader from "../Components/PollHeader/PollHeader";
 import RangeSelector from "../Components/RangeSelector";
 import './template.scss';
+import {useEffect} from "react";
 
 const RoomTemplate = () => {
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        const checkToken = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/check-token-validToken`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        window.location.href = '/login';
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking token:', error);
+            }
+        };
+
+        checkToken();
+    }, []);
     return (
         <>
             <PageHeader heading="Create Room Poll" link="/selectTemplate"/>

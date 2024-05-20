@@ -33,6 +33,9 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('username', username);
+        localStorage.setItem('refreshToken', data.refreshToken);
+
         window.location.href = '/dashboard';
         console.log('Login successful');
       } else {

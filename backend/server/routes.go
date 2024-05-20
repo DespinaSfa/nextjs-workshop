@@ -191,6 +191,10 @@ func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) CheckTokenValid(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
 // PostPollByIDHandler godoc
 // @Summary  Post a poll result
 // @Tags Polls
@@ -346,6 +350,7 @@ func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 
 	r.Post("/login", server.LoginHandler)
 	r.Post("/refresh-token", server.RefreshToken)
+	r.Post("/check-token-valid", server.CheckTokenValid)
 
 	r.Get("/polls", server.GetPollsHandler)
 	r.Post("/polls", server.PostPollsHandler)

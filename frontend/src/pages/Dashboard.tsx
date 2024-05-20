@@ -9,11 +9,24 @@ const Dashboard = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          window.location.href = '/login';
+      }
+
     const fetchPolls = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/polls`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/polls`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
-          throw new Error('Failed to fetch polls');
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+                return;
+            }
         }
         const data = await response.json();
         setPolls(data);
@@ -36,7 +49,7 @@ const Dashboard = () => {
      </div>
      <div className="spread">
     <h2 className="dashboard-title">Your Polls</h2>
-    <MainButton text={"Add Poll"} link={"/"}/>
+    <MainButton text={"Add Poll"} link={"/selectTemplate"}/>
     </div>
       <div className="poll-list">
         {polls.length === 0 ? (
