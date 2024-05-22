@@ -1,22 +1,22 @@
 import { Outlet, Link } from "react-router-dom";
-import c from './Page_styles.module.scss';
+import './selectTemplate.scss';
 import Button from "@mui/material/Button";
 import PageHeader from "../Components/PageHeader/PageHeader";
 
 const SelectTemplate = () => {
     return(
-        <div className={c.content}>
+        <div className="content">
             <PageHeader heading="Select poll type" link="/"/>
-            <div className={c.selectContainer}>
-                <Button className={`${c.selectButton} ${c.party}`} variant="contained" component={Link} to='partyTemplate'>
-                    <div className={c.buttonText}>Party</div>
+            <div className="selectContainer">
+                <Button className="selectButton party" variant="contained" component={Link} to='partyTemplate'>
+                    <div className="buttonText">Party</div>
                 </Button>
-                <Button className={`${c.selectButton} ${c.room}`} variant="contained" component={Link} to='roomTemplate'>
-                    <div className={c.buttonText}>Room</div>
+                <Button className="selectButton room" variant="contained" component={Link} to='roomTemplate'>
+                    <div className="buttonText">Room</div>
                 </Button>
-                <Button className={`${c.selectButton} ${c.wedding}`} variant="contained" component={Link} to='weddingTemplate'>
+                <Button className="selectButton wedding" variant="contained" component={Link} to='weddingTemplate'>
                         
-                    <div className={c.buttonText}>Wedding</div>
+                    <div className="buttonText">Wedding</div>
                 </Button>
             </div>
 
