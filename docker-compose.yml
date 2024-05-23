@@ -1,6 +1,17 @@
-version: '3.8'
-
 services:
+  frontend:
+    container_name: partypoll_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true # For watching file changes in Docker
+
   db:
     image: postgres:latest
     container_name: postgres_db
@@ -13,3 +24,20 @@ services:
       POSTGRES_PASSWORD: bestvater
     volumes:
       - ./data:/var/lib/postgresql/data
+
+  backend:
+    container_name: partypoll_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=daddy
+      - DB_PASSWORD=bestvater
+      - DB_NAME=partyPollDB
