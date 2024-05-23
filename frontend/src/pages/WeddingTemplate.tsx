@@ -16,7 +16,7 @@ const WeddingTemplate = () => {
 
         const checkToken = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/check-token-validToken`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/check-token-valid`, {headers: { 'Authorization': `Bearer ${token}` } });
                 if (!response.ok) {
                     if (response.status === 401) {
                         localStorage.removeItem('token');

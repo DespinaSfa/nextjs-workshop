@@ -350,7 +350,7 @@ func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 
 	r.Post("/login", server.LoginHandler)
 	r.Post("/refresh-token", server.RefreshToken)
-	r.Post("/check-token-valid", server.CheckTokenValid)
+	r.Get("/check-token-valid", server.CheckTokenValid)
 
 	r.Get("/polls", server.GetPollsHandler)
 	r.Post("/polls", server.PostPollsHandler)
