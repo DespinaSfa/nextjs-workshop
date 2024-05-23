@@ -50,7 +50,7 @@ const Login = () => {
       <div className={c.container}>
         <h1 className={c.title}>Party Poll</h1>
         <hr className={c.separator} />
-        <p>Log in to see your polls!</p>
+        <p className={c.loginDescription}>Log in to see your polls!</p>
         <InputField
           startIcon={<PersonSharpIcon className={c.personSVG} />}
           label={"Username"}

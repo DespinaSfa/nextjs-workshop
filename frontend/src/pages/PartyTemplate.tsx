@@ -9,7 +9,7 @@ import './template.scss';
 const PartyTemplate = () => {
     return (
         <>
-            <PageHeader heading="Create Party Poll" link="/selectTemplate" />
+            <PageHeader heading="Create Party Poll" link="/select-template" />
             <div className="template">
             <PollHeader />
                 <p className="question">Which songs should definitely be played tonight? 📻</p>

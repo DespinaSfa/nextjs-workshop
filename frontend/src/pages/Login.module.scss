@@ -13,25 +13,25 @@
 
 .title {
     font-family: "Gochi Hand";
-    font-size: 5vw; 
+    font-size: 5vw;
 }
 
-p {
+.loginDescription {
     margin-bottom: 3rem;
     font-family: "Raleway";
 }
 
 
 .separator {
-    width: 30%; 
-    border: none; 
-    height: 1px; 
-    background-color: #DBF881; 
-    margin-bottom: 2rem; 
-  }
+    width: 30%;
+    border: none;
+    height: 1px;
+    background-color: #DBF881;
+    margin-bottom: 2rem;
+}
 
 .error {
-    color: red; 
+    color: red;
 }
 
 @media (max-width: 750px) {

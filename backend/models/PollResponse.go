@@ -1,6 +1,8 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type PollInfo struct {
 	Title       string `json:"title"`
@@ -24,6 +26,14 @@ type PollWeddingResponse struct {
 	KnowCoupleFromWhere string `json:"knowCoupleFromWhere"`
 	WeddingHighlight    string `json:"weddingHighlight"`
 	CoupleWish          string `json:"coupleWish"`
+}
+
+type PollPlanningResponse struct {
+	EssentialDrink  string `json:"essentialDrink"`
+	EssentialFood   string `json:"essentialFood"`
+	MusicToBePlayed string `json:"musicToBePlayed"`
+	Activities      string `json:"activities"`
+	EventWish       string `json:"eventWish"`
 }
 
 type GenericPollResponse struct {
