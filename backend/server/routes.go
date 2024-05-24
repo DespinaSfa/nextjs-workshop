@@ -251,7 +251,18 @@ func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GenerateQRHandler handles requests to generate QR codes @TO-DO: work with UUID
+// GenerateQRHandler handles requests to generate QR codes from URLs
+// @Summary Generate QR code
+// @Description Generate a QR code from the provided URL
+// @Tags QR
+// @Accept  json
+// @Produce  png
+// @Param   qrRequest body QRRequest true "QR request"
+// @Success 200 {file} file "QR code image"
+// @Failure 400 {object} string "Invalid request format"
+// @Failure 500 {object} string "Failed to generate QR code"
+// @Router /qr [post]
+// GenerateQRHandler handles requests to generate QR codes from URLs
 func (s *Server) GenerateQRHandler(w http.ResponseWriter, r *http.Request) {
 	type QRRequest struct {
 		URL string `json:"url"`
@@ -378,6 +389,7 @@ func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
 
 	r.Post("/login", server.LoginHandler)
 	r.Post("/refresh-token", server.RefreshToken)
+	r.Get("/qr", server.GenerateQRHandler)
 
 	r.Get("/polls", server.GetPollsHandler)
 	r.Post("/polls", server.PostPollsHandler)
