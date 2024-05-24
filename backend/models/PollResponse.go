@@ -6,6 +6,7 @@ import (
 
 type PollInfo struct {
 	Title       string `json:"title"`
+	ID          string `json:"id"`
 	Description string `json:"description"`
 	PollType    string `json:"pollType"`
 }
@@ -37,7 +38,7 @@ type PollPlanningResponse struct {
 }
 
 type GenericPollResponse struct {
-	PollID   uint            `json:"poll_id"`
+	PollID   string          `json:"poll_id"`
 	PollType string          `json:"poll_type"`
 	Data     json.RawMessage `json:"data"` // Use json.RawMessage for deferred unmarshalling
 }
