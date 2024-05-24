@@ -11,9 +11,9 @@ type Poll struct {
 	Title         string         `gorm:"size:255;not null"`
 	Description   string         `gorm:"size:1024"`
 	PollType      string         `gorm:"size:50"`
-	PollParties   []PollParty    `gorm:"foreignKey:PollID"`
-	PollWeddings  []PollWedding  `gorm:"foreignKey:PollID"`
-	PollPlannings []PollPlanning `gorm:"foreignKey:PollID"`
+	PollParties   []PollParty    `gorm:"foreignKey:PollID;constraint:OnDelete:CASCADE;"`
+	PollWeddings  []PollWedding  `gorm:"foreignKey:PollID;constraint:OnDelete:CASCADE;"`
+	PollPlannings []PollPlanning `gorm:"foreignKey:PollID;constraint:OnDelete:CASCADE;"`
 }
 
 func (poll *Poll) BeforeCreate(tx *gorm.DB) (err error) {
