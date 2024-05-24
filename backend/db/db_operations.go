@@ -9,12 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreatePoll(db *gorm.DB, addPoll *models.Poll) error {
+func CreatePoll(db *gorm.DB, addPoll *models.Poll) (*models.Poll, error) {
 	result := db.Create(addPoll)
 	if result.Error != nil {
-		return fmt.Errorf("error creating poll: %w", result.Error)
+		return nil, fmt.Errorf("error creating poll: %w", result.Error)
 	}
-	return nil
+	return addPoll, nil
 }
 
 func CreatePollResponse(db *gorm.DB, jsonResponse []byte) error {
@@ -42,13 +42,22 @@ func CreatePollResponse(db *gorm.DB, jsonResponse []byte) error {
 		return err
 	}
 
+	// Check if the poll ID exists
+	var poll models.Poll
+	if err := db.First(&poll, "id = ?", response.PollID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("poll with ID %s not found: %w", response.PollID, err)
+		}
+		return fmt.Errorf("error checking poll existence: %w", err)
+	}
+
 	switch response.PollType {
 	case "party":
 		var partyResponse models.PollPartyResponse
 		if err := json.Unmarshal(response.Data, &partyResponse); err != nil {
 			return err
 		}
-		// Convert PollPartyResponse to PollParty (your DB model)
+		// Convert PollPartyResponse to PollParty (your DBInst model)
 		dbModel := models.PollParty{
 			PollID:                response.PollID,
 			SongToBePlayed:        partyResponse.SongToBePlayed,
@@ -81,7 +90,7 @@ func CreatePollResponse(db *gorm.DB, jsonResponse []byte) error {
 			return err
 		}
 
-		// Convert PollWeddingResponse to PollWedding (your DB model)
+		// Convert PollWeddingResponse to PollWedding (your DBInst model)
 		dbModel := models.PollWedding{
 			PollID:              response.PollID,
 			WeddingInvite:       weddingResponse.WeddingInvite,
@@ -183,7 +192,7 @@ func ReadUserPolls(userID int) ([]*models.PollInfo, error) {
 
 	var pollResponse []*models.PollInfo
 	// Select only the "title" and "description" columns from the database
-	result = db.Model(&models.Poll{}).Select("title, description, poll_type").Where("user_id = ?", userID).Scan(&pollResponse)
+	result = db.Model(&models.Poll{}).Select("title, description, poll_type, id").Where("user_id = ?", userID).Scan(&pollResponse)
 	if result.Error != nil {
 		return nil, fmt.Errorf("failed to get user's polls: %w", result.Error)
 	}
@@ -191,9 +200,9 @@ func ReadUserPolls(userID int) ([]*models.PollInfo, error) {
 	return pollResponse, nil
 }
 
-func ReadPollByID(db *gorm.DB, pollID int) (*models.Poll, error) {
+func ReadPollByID(db *gorm.DB, pollID string) (*models.Poll, error) {
 	var poll models.Poll
-	result := db.Preload("PollParties").Preload("PollWeddings").Preload("PollPlannings").First(&poll, pollID)
+	result := db.Preload("PollParties").Preload("PollWeddings").Preload("PollPlannings").First(&poll, "id = ?", pollID)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("poll not found: %w", result.Error)
@@ -203,15 +212,15 @@ func ReadPollByID(db *gorm.DB, pollID int) (*models.Poll, error) {
 	return &poll, nil
 }
 
-func DeletePollByID(db *gorm.DB, pollID int) error {
+func DeletePollByID(db *gorm.DB, pollID string) error {
 	// Delete the poll; associated PollParty and PollWedding records will be deleted automatically
-	result := db.Delete(&models.Poll{}, pollID)
+	result := db.Delete(&models.Poll{}, "id = ?", pollID)
 	if result.Error != nil {
 		return fmt.Errorf("failed to delete poll: %w", result.Error)
 	}
 
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("no poll found with ID %d", pollID)
+		return fmt.Errorf("no poll found with ID %s", pollID)
 	}
 
 	return nil

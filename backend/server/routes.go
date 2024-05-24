@@ -7,18 +7,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
-	"strconv"
-
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"io"
+	"net/http"
 )
 
 type Server struct {
-	DB *gorm.DB
+	DBInst *gorm.DB
 }
 
 // GetPollsHandler godoc
@@ -30,7 +29,7 @@ type Server struct {
 // @Router       /polls [get]
 func (s *Server) GetPollsHandler(w http.ResponseWriter, _ *http.Request) {
 	//Get User ID
-	userID := 2 // TODO: Get user ID from Auth
+	userID := 2 // TODO: Get user ID from Auth @Maik
 	// Read user polls
 	polls, err := db.ReadUserPolls(userID)
 	if err != nil {
@@ -65,18 +64,18 @@ func (s *Server) GetPollsHandler(w http.ResponseWriter, _ *http.Request) {
 //
 // @Router       /polls [post]
 func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
-	//Get User ID
-	userID := uint(2) // TODO: Get user ID from Auth
+	// Get User ID
+	userID := uint(2) // TODO: Get user ID from Auth @Maik
 
 	// Read the request body
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Print("Error reading request body:", err)
+		fmt.Println("Error reading request body:", err)
 		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
 		return
 	}
-	fmt.Print("Received POST request to /polls")
-	fmt.Print("Request Body:", string(body))
+	fmt.Println("Received POST request to /polls")
+	fmt.Println("Request Body:", string(body))
 
 	type PollPostBody struct {
 		UserID      int    `json:"userID"`
@@ -88,7 +87,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 	var requestBody PollPostBody
 	err = json.Unmarshal(body, &requestBody)
 	if err != nil {
-		fmt.Print("Error parsing request body:", err)
+		fmt.Println("Error parsing request body:", err)
 		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
@@ -100,30 +99,32 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 		PollType:    requestBody.PollType,
 	}
 
-	if err := db.CreatePoll(s.DB, newPoll); err != nil {
-		fmt.Print("Error creating poll:", err)
+	createdPoll, err := db.CreatePoll(s.DBInst, newPoll)
+	if err != nil {
+		fmt.Println("Error creating poll:", err)
 		http.Error(w, "Failed to create poll", http.StatusInternalServerError)
 		return
 	}
 
-	response := map[string]string{"message": "Poll created successfully", "status": "OK"}
+	response := map[string]string{
+		"message": "Poll created successfully",
+		"status":  "OK",
+		"pollID":  createdPoll.ID,
+	}
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		fmt.Print("Error marshaling JSON response:", err)
+		fmt.Println("Error marshaling JSON response:", err)
 		http.Error(w, "Failed to marshal JSON response", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-
-	// Write response
+	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(jsonResponse); err != nil {
-		fmt.Print("Error writing response:", err)
+		fmt.Println("Error writing response:", err)
 		http.Error(w, "Failed to write response", http.StatusInternalServerError)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 // DeletePollByIDHandler godoc
@@ -132,20 +133,15 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 //	    @Tags           Polls
 //		@Accept			json
 //		@Produce		json
-//		@Param			id	path		int	true	"Poll ID"	Format(int64)
+//		@Param			id	path		string	true	"Poll ID"
 //		@Success		204	string Poll successfully deleted
 //		@Router			/polls/{id} [delete]
 func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollIDStr := chi.URLParam(r, "pollId")
-	pollID, err := strconv.Atoi(pollIDStr)
-	if err != nil {
-		http.Error(w, "Invalid poll ID", http.StatusBadRequest)
-		return
-	}
 
-	err = db.DeletePollByID(s.DB, pollID)
+	err := db.DeletePollByID(s.DBInst, pollIDStr)
 	if err != nil {
-		http.Error(w, "Failed to delete poll", http.StatusInternalServerError)
+		http.Error(w, "Failed to delete poll: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -157,25 +153,18 @@ func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags Polls
 // @Produce      json
 // @Success      200  string Add model
-// @Param		 id	path		int	true	"Poll ID"	Format(int64)
+// @Param		 id	path		string	true	"Poll ID"
 // @Router       /polls/{id} [get]
 func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
-	pollIDStr := chi.URLParam(r, "pollId")
+	pollID := chi.URLParam(r, "pollId")
 
-	pollID, err := strconv.Atoi(pollIDStr)
-
-	if err != nil {
-		http.Error(w, "Invalid poll ID", http.StatusBadRequest)
-		return
-	}
-
-	poll, err := db.ReadPollByID(s.DB, pollID)
+	poll, err := db.ReadPollByID(s.DBInst, pollID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			http.Error(w, "Poll not found", http.StatusNotFound)
 			return
 		}
-		http.Error(w, "Failed to retrieve poll", http.StatusInternalServerError) // <- err
+		http.Error(w, "Failed to retrieve poll", http.StatusInternalServerError)
 		return
 	}
 
@@ -199,15 +188,15 @@ func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags Polls
 // @Produce      json
 // @Success      200   string Poll result added successfully
-// @Param		 id	    path  int	                        true	"Poll ID"	Format(int64)
+// @Param		 id	    path  string	                    true	"Poll ID"
 // @Param		 poll	body  models.GenericPollResponse    true	 "Add poll response"
 // @Router       /polls/{id} [post]
 func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollIDStr := chi.URLParam(r, "pollId")
 
-	_, err := strconv.Atoi(pollIDStr)
-	if err != nil {
-		fmt.Println(err)
+	// Validate poll ID as UUID
+	if _, err := uuid.Parse(pollIDStr); err != nil {
+		fmt.Println("Invalid poll ID:", err)
 		http.Error(w, "Invalid poll ID", http.StatusBadRequest)
 		return
 	}
@@ -226,6 +215,10 @@ func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Associate the response data with the poll ID
+	pollResponseData.PollID = pollIDStr
+
+	// Marshal the response data back to JSON for storing in DB (if needed)
 	pollResponseJSON, err := json.Marshal(pollResponseData)
 	if err != nil {
 		fmt.Println("Error marshaling poll response data:", err)
@@ -233,7 +226,8 @@ func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := db.CreatePollResponse(s.DB, pollResponseJSON); err != nil {
+	// Save the poll response to the database
+	if err := db.CreatePollResponse(s.DBInst, []byte(pollResponseJSON)); err != nil {
 		fmt.Println("Error creating poll response:", err)
 		http.Error(w, "Failed to create poll response", http.StatusInternalServerError)
 		return
@@ -257,7 +251,18 @@ func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GenerateQRHandler handles requests to generate QR codes @TO-DO: work with UUID
+// GenerateQRHandler handles requests to generate QR codes from URLs
+// @Summary Generate QR code
+// @Description Generate a QR code from the provided URL
+// @Tags QR
+// @Accept  json
+// @Produce  png
+// @Param   qrRequest body QRRequest true "QR request"
+// @Success 200 {file} file "QR code image"
+// @Failure 400 {object} string "Invalid request format"
+// @Failure 500 {object} string "Failed to generate QR code"
+// @Router /qr [post]
+// GenerateQRHandler handles requests to generate QR codes from URLs
 func (s *Server) GenerateQRHandler(w http.ResponseWriter, r *http.Request) {
 	type QRRequest struct {
 		URL string `json:"url"`
@@ -379,11 +384,12 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func setupRoutes(r *chi.Mux, dbInstance *gorm.DB) {
-	server := &Server{DB: dbInstance}
+	server := &Server{DBInst: dbInstance}
 	r.Mount("/swagger", httpSwagger.WrapHandler)
 
 	r.Post("/login", server.LoginHandler)
 	r.Post("/refresh-token", server.RefreshToken)
+	r.Get("/qr", server.GenerateQRHandler)
 
 	r.Get("/polls", server.GetPollsHandler)
 	r.Post("/polls", server.PostPollsHandler)
