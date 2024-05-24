@@ -42,6 +42,15 @@ func CreatePollResponse(db *gorm.DB, jsonResponse []byte) error {
 		return err
 	}
 
+	// Check if the poll ID exists
+	var poll models.Poll
+	if err := db.First(&poll, "id = ?", response.PollID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("poll with ID %s not found: %w", response.PollID, err)
+		}
+		return fmt.Errorf("error checking poll existence: %w", err)
+	}
+
 	switch response.PollType {
 	case "party":
 		var partyResponse models.PollPartyResponse
