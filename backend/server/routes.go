@@ -133,7 +133,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 //	    @Tags           Polls
 //		@Accept			json
 //		@Produce		json
-//		@Param			id	path		int	true	"Poll ID"	Format(int64)
+//		@Param			id	path		string	true	"Poll ID"
 //		@Success		204	string Poll successfully deleted
 //		@Router			/polls/{id} [delete]
 func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +153,7 @@ func (s *Server) DeletePollByIDHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags Polls
 // @Produce      json
 // @Success      200  string Add model
-// @Param		 id	path		int	true	"Poll ID"	Format(int64)
+// @Param		 id	path		string	true	"Poll ID"
 // @Router       /polls/{id} [get]
 func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pollID := chi.URLParam(r, "pollId")
@@ -188,7 +188,7 @@ func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags Polls
 // @Produce      json
 // @Success      200   string Poll result added successfully
-// @Param		 id	    path  int	                        true	"Poll ID"	Format(int64)
+// @Param		 id	    path  string	                    true	"Poll ID"
 // @Param		 poll	body  models.GenericPollResponse    true	 "Add poll response"
 // @Router       /polls/{id} [post]
 func (s *Server) PostPollByIDHandler(w http.ResponseWriter, r *http.Request) {
