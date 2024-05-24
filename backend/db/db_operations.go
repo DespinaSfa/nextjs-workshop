@@ -212,15 +212,15 @@ func ReadPollByID(db *gorm.DB, pollID string) (*models.Poll, error) {
 	return &poll, nil
 }
 
-func DeletePollByID(db *gorm.DB, pollID int) error {
+func DeletePollByID(db *gorm.DB, pollID string) error {
 	// Delete the poll; associated PollParty and PollWedding records will be deleted automatically
-	result := db.Delete(&models.Poll{}, pollID)
+	result := db.Delete(&models.Poll{}, "id = ?", pollID)
 	if result.Error != nil {
 		return fmt.Errorf("failed to delete poll: %w", result.Error)
 	}
 
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("no poll found with ID %d", pollID)
+		return fmt.Errorf("no poll found with ID %s", pollID)
 	}
 
 	return nil
