@@ -183,6 +183,10 @@ func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) CheckTokenValid(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
 // PostPollByIDHandler godoc
 // @Summary  Post a poll result
 // @Tags Polls
