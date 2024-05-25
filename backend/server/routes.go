@@ -113,7 +113,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		fmt.Println("Error marshaling JSON response:", err)
+		fmt.Print("Error marshaling JSON response:", err)
 		http.Error(w, "Failed to marshal JSON response", http.StatusInternalServerError)
 		return
 	}
