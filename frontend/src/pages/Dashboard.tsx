@@ -49,7 +49,7 @@ const Dashboard = () => {
      </div>
      <div className="spread">
     <h2 className="dashboard-title">Your Polls</h2>
-    <MainButton text={"Add Poll"} link={"/select-template"}/>
+    <MainButton text={"Add Poll"} link={"/selectTemplate"}/>
     </div>
       <div className="poll-list">
         {polls.length === 0 ? (
