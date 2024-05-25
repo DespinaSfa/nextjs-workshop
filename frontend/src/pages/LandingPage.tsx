@@ -8,7 +8,7 @@ const LandingPage = () => {
             <h1 className="icon">Party Poll</h1>
             <p className="text">Tired of boring parties? Spice things up with PartyPoll! Vote on songs, review the restroom, you name it! Plus, no need for sober sign-ups - just scan the QR code and vote instantly!</p>
             <div className="button">
-                <MainButton text="Create Poll" link="/select-template"/>
+                <MainButton text="Login" link="/login"/>
             </div>
 
             <Outlet />

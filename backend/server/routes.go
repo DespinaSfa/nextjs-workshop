@@ -113,7 +113,7 @@ func (s *Server) PostPollsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		fmt.Println("Error marshaling JSON response:", err)
+		fmt.Print("Error marshaling JSON response:", err)
 		http.Error(w, "Failed to marshal JSON response", http.StatusInternalServerError)
 		return
 	}
@@ -181,6 +181,10 @@ func (s *Server) GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to write response", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (s *Server) CheckTokenValid(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
 
 // PostPollByIDHandler godoc
