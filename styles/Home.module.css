@@ -1,0 +1,27 @@
+.container {
+    padding: 2rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .listItem {
+    margin: 0.5rem 0;
+  }
+  
+  .listItem a {
+    color: #0070f3;
+    text-decoration: none;
+  }
+  
+  .listItem a:hover {
+    text-decoration: underline;
+  }
+  
